@@ -41,13 +41,19 @@
 **Interfaces:**
 - Produces: працююче `pnpm install && pnpm test` на чистому форку; віддалені `origin` (форк) і `upstream` (gethomepage/homepage).
 
-- [ ] **Step 1: Створити форк на GitHub** — це публічна дія від імені автора: попросити автора створити форк (`<FORK_NAME>` — його вибір) і дати URL; самостійно не створювати.
-- [ ] **Step 2: Клонувати форк, додати `upstream`, створити гілку `editor-integration`**
+- [x] **Step 1: Створити форк на GitHub** — це публічна дія від імені автора: попросити автора створити форк (`<FORK_NAME>` — його вибір) і дати URL; самостійно не створювати.
+- [x] **Step 2: Клонувати форк, додати `upstream`, створити гілку `editor-integration`**
   Run: `git remote add upstream https://github.com/gethomepage/homepage && git fetch upstream && git remote -v`
   Expected: `origin` і `upstream` у списку.
-- [ ] **Step 3: Базова перевірка** — `pnpm install --frozen-lockfile && pnpm test`. Expected: усі тести проходять (зафіксувати кількість як базову лінію).
-- [ ] **Step 4: Додати `NOTICE`** (рядок про код редактора: «Portions © jchisholm59, MIT», з повним текстом MIT-ліцензії), абзац у README про форк, позначку про ШІ, посилання на апстрім; виправити LABEL у `Dockerfile`.
-- [ ] **Step 5: Commit** — `chore: fork bootstrap, NOTICE and README disclosure`
+- [x] **Step 3: Базова перевірка** — `pnpm install --frozen-lockfile && pnpm test`. Expected: усі тести проходять (зафіксувати кількість як базову лінію).
+- [x] **Step 4: Додати `NOTICE`** (рядок про код редактора: «Portions © jchisholm59, MIT», з повним текстом MIT-ліцензії), абзац у README про форк, позначку про ШІ, посилання на апстрім; виправити LABEL у `Dockerfile`.
+- [x] **Step 5: Commit** — `chore: fork bootstrap, NOTICE and README disclosure`
+
+**Виконано 2026-11-25. Відхилення й факти:**
+- Форк: `uagreen/Hearthboard`, назва обрана автором. Робоча копія — `/mnt/e/projekts/Homepage_gui` (корінь репозиторію), а не окрема папка; `core.fileMode=false` (диск Windows ставить 755 усім файлам).
+- Базова лінія Step 3: **1934 проходять, 18 падають** (`theme`, `color`, `search`, `pages/index`), усі з `localStorage.* is not a function` — Node 25 у системі; на Node 24 не перевірялося. Нові тести порівнювати з цією лінією.
+- Доступ на запис: SSH-ключ `id_ed25519_hearthboard`, alias `github-hearthboard` у `~/.ssh/config` (працює лише з WSL, не з PhpStorm під Windows).
+- Коміт `f5f20e13`, гілка `editor-integration` запушена.
 
 ---
 
