@@ -74,13 +74,19 @@
 - Produces (`backups.js`, каталог з `EDITOR_BACKUP_DIR`, за замовчуванням `<CONF_DIR>/../backups`… — виконавець вибирає розумний шлях і документує): `backupFile(name, current): string|null`, `listBackups(): {id, files}[]`, `readBackup(id, name)`, `pruneBackups(keep = 300)`.
 - Produces (`sync.js`): `syncDocument(doc, value): void`.
 
-- [ ] **Step 1: Тести `sync.test.js`** — перенести ідеї з `scripts/roundtrip-test.mjs` та `edit-test.mjs` оригіналу: незмінений `data` дає ідентичний текст; зміна одного ключа зберігає коментарі та порядок; порожній документ (`''` і лише `# коментар`) приймає `{title: 'x'}` без втрати коментаря.
-- [ ] **Step 2: Тести `files.test.js`** — `configPath` відхиляє `../settings.yaml`, `a/b.yaml`, `x.txt`, `settings.yaml/`, `.hidden.yaml` (400); приймає `settings.yaml`, `custom.css`; `renderEdit` для `{data}` на файлі з YAML-помилкою кидає 400 «edit it as text».
-- [ ] **Step 3: Тести `backups.test.js`** — `backupFile` створює `<id>/<name>`; `pruneBackups(2)` лишає 2 найновіших; `readBackup` з id, що не відповідає `/^\d{4}-[\w-]+$/`, → 400.
-- [ ] **Step 4: Запустити — FAIL.** Run: `pnpm vitest run src/utils/editor` — Expected: FAIL (модулів немає).
-- [ ] **Step 5: Реалізувати** модулі за сигнатурами вище, переносячи логіку з `server.js` (рядки `configPath`, `readFile`, `parseYaml`, `render`, `backupFile`, `pruneBackups`). Тести використовують тимчасовий каталог через `HOMEPAGE_CONFIG_DIR`/`EDITOR_BACKUP_DIR`.
-- [ ] **Step 6: Запустити — PASS.** Run: `pnpm vitest run src/utils/editor && pnpm lint`
-- [ ] **Step 7: Commit** — `feat(editor): core file, yaml-merge and backup utilities`
+- [x] **Step 1: Тести `sync.test.js`** — перенести ідеї з `scripts/roundtrip-test.mjs` та `edit-test.mjs` оригіналу: незмінений `data` дає ідентичний текст; зміна одного ключа зберігає коментарі та порядок; порожній документ (`''` і лише `# коментар`) приймає `{title: 'x'}` без втрати коментаря.
+- [x] **Step 2: Тести `files.test.js`** — `configPath` відхиляє `../settings.yaml`, `a/b.yaml`, `x.txt`, `settings.yaml/`, `.hidden.yaml` (400); приймає `settings.yaml`, `custom.css`; `renderEdit` для `{data}` на файлі з YAML-помилкою кидає 400 «edit it as text».
+- [x] **Step 3: Тести `backups.test.js`** — `backupFile` створює `<id>/<name>`; `pruneBackups(2)` лишає 2 найновіших; `readBackup` з id, що не відповідає `/^\d{4}-[\w-]+$/`, → 400.
+- [x] **Step 4: Запустити — FAIL.** Run: `pnpm vitest run src/utils/editor` — Expected: FAIL (модулів немає).
+- [x] **Step 5: Реалізувати** модулі за сигнатурами вище, переносячи логіку з `server.js` (рядки `configPath`, `readFile`, `parseYaml`, `render`, `backupFile`, `pruneBackups`). Тести використовують тимчасовий каталог через `HOMEPAGE_CONFIG_DIR`/`EDITOR_BACKUP_DIR`.
+- [x] **Step 6: Запустити — PASS.** Run: `pnpm vitest run src/utils/editor && pnpm lint`
+- [x] **Step 7: Commit** — `feat(editor): core file, yaml-merge and backup utilities`
+
+**Виконано 2026-11-25 (коміт `a07c8365`). Відхилення й факти:**
+- Залежності: `yaml@2.9.1`, `diff@9.0.0`. Тести редактора: 32/32, eslint чистий, prettier застосовано (`pre-commit` локально не встановлений).
+- Каталог бекапів за замовчуванням — `<CONF_DIR>/.editor-backups` (змінюється через `EDITOR_BACKUP_DIR`); пережив би перестворення контейнера, бо лежить у томі config. Згадати в `docs/configs/editor.md` (Task 6).
+- `renderEdit` розбирає порожній файл як `""`, а не `"---\n"` (оригінал), щоб у нових файлах не з'являвся зайвий `---`.
+- Вихідний клон `jchisholm59/homepage-editor` після перенесення папки втрачено разом зі scratchpad; перекачано заново (read-only) у scratchpad поточної сесії.
 
 ---
 
@@ -100,12 +106,19 @@
 - Контракти маршрутів — як у `server.js` оригіналу, шлях `/api/editor/...`: `GET info` → `{homepageVersion, password: boolean, canRestart: boolean}` (версія з `package.json`); `GET files`; `GET file/:name`; `POST preview/:name`; `POST save/:name` (тіло `{text|data, baseMtime?}`, ліміт тіла 2 MB через `export const config`).
 - Після успішного збереження — `invalidateDashboardData()` напряму (без HTTP-виклику `/api/revalidate`).
 
-- [ ] **Step 1: Тести `guard.test.js`** — без `HOMEPAGE_EDITOR` → 404; увімкнено, auth вимкнено, пароль не задано → 403; пароль задано, невірний заголовок → 401, вірний → викликається handler; `EDITOR_ALLOW_NO_AUTH=true` → handler.
-- [ ] **Step 2: Тести `save/[name].test.js`** (з тимчасовим `HOMEPAGE_CONFIG_DIR`): валідне збереження створює бекап і викликає `invalidateDashboardData`; невалідний YAML → 400, файл і каталог бекапів без змін; застарілий `baseMtime` → 409, файл без змін; `changed:false` → `{saved:false}` без бекапу.
-- [ ] **Step 3: Запустити — FAIL.** Run: `pnpm vitest run src/utils/editor/guard.test.js "src/pages/api/editor"`
-- [ ] **Step 4: Реалізувати `withEditor` і маршрути**, повторивши логіку обробників оригіналу; кожен маршрут експортує `withEditor(handler)`. Використати `utils/logger` як у сусідніх маршрутах.
-- [ ] **Step 5: Запустити — PASS**, `pnpm lint`.
-- [ ] **Step 6: Commit** — `feat(editor): guarded file API with diff, backup and conflict detection`
+- [x] **Step 1: Тести `guard.test.js`** — без `HOMEPAGE_EDITOR` → 404; увімкнено, auth вимкнено, пароль не задано → 403; пароль задано, невірний заголовок → 401, вірний → викликається handler; `EDITOR_ALLOW_NO_AUTH=true` → handler.
+- [x] **Step 2: Тести `save/[name].test.js`** (з тимчасовим `HOMEPAGE_CONFIG_DIR`): валідне збереження створює бекап і викликає `invalidateDashboardData`; невалідний YAML → 400, файл і каталог бекапів без змін; застарілий `baseMtime` → 409, файл без змін; `changed:false` → `{saved:false}` без бекапу.
+- [x] **Step 3: Запустити — FAIL.** Run: `pnpm vitest run src/utils/editor/guard.test.js "src/pages/api/editor"`
+- [x] **Step 4: Реалізувати `withEditor` і маршрути**, повторивши логіку обробників оригіналу; кожен маршрут експортує `withEditor(handler)`. Використати `utils/logger` як у сусідніх маршрутах.
+- [x] **Step 5: Запустити — PASS**, `pnpm lint`.
+- [x] **Step 6: Commit** — `feat(editor): guarded file API with diff, backup and conflict detection`
+
+**Виконано 2026-11-25. Відхилення й факти:**
+- Тест `save` лежить у `src/__tests__/pages/api/editor/save.test.js`, а не поруч із маршрутом: файл `*.test.js` у `src/pages/api` Next трактує як API-маршрут, а `auth-boundary.test.js` перебирає всі файли там. Те саме правило — для тестів Task 3.
+- Порядок у `withEditor`: перевірка хоста → якщо auth Homepage ввімкнено, 401 для анонімів → 404 при вимкненому редакторі → пароль/403. Причина: `auth-boundary.test.js` вимагає 401/400 для кожного маршруту. Наслідок: при ввімкненому auth анонім бачить 401, а не 404 (як на решті API).
+- Тестове середовище ставить `HOMEPAGE_ALLOWED_HOSTS="*"`; тест відхилення хоста його скидає. `utils/logger` у тестах замоканий (його ініціалізація копіює `settings.yaml` у каталог конфігу).
+- Додано `assertMethod` (405) у `guard.js`; маршрути повертають `res.status(200).json(...)`.
+- Перевірки: `pnpm vitest run src/utils/editor src/__tests__/pages/api/editor` — 49/49; усі маршрути редактора проходять `auth-boundary`. Повний `pnpm test` і повний eslint після перестановки в guard на момент коміту **не завершились** (диск `/mnt/e` повільний, прогін понад 25 хв) — дозапустити окремо.
 
 ---
 
