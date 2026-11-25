@@ -5,6 +5,10 @@
   </picture>
 </p>
 
+> **Hearthboard** is an independent fork of [Homepage](https://github.com/gethomepage/homepage) (GPL-3.0) that adds a built-in web editor for your configuration, based on [homepage-editor](https://github.com/jchisholm59/homepage-editor) (MIT, see [NOTICE](NOTICE)). It is not affiliated with or endorsed by the Homepage project.
+>
+> **AI disclosure:** part of the code in this fork was written with the help of an AI assistant (Claude). It has not been submitted upstream.
+
 <p align="center">
   A modern, <em>fast</em>, secure <em>fully proxied</em>, highly customizable application dashboard with integrations for over 100 services and translations into multiple languages. Easily configured via YAML files or through docker label discovery.
 </p>
