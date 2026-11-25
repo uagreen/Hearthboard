@@ -134,11 +134,18 @@
 - Маршрути — як в оригіналі: `GET backups`, `GET backup/:id/:name`, `POST restore/:id/:name`, `GET icons`, `GET icons/served`, `POST icons/fetch`, `POST icons/upload` (`bodyParser: false`, ліміт 15 MB), `GET icons/local/:name` (замість `/local-icons`), `POST check-links`, `POST restart` (404 без `DOCKER_PROXY`).
 - `icons/fetch` і `check-links` роблять вихідні HTTP-запити за URL від користувача: **приймати лише `http(s)`, і відхиляти адреси loopback/link-local (`127.0.0.0/8`, `169.254.0.0/16`, `::1`) для `icons/fetch`**; `check-links` для приватних LAN-адрес залишає дозволеним (його мета — перевіряти LAN-сервіси).
 
-- [ ] **Step 1: Тести** — `safeIconName('My Icon!.PNG')` → `'my-icon-.png'`-подібний безпечний результат без `/` і провідних крапок (точні значення виконавець фіксує за логікою оригіналу); `storeIcon` відхиляє `text/html` і буфер >15 MB; `icons/fetch` відхиляє `http://127.0.0.1/x.png` і `file:///etc/passwd` (400); `check-links` ігнорує не-http(s) і обмежує 200 URL.
-- [ ] **Step 2: Запустити — FAIL.**
-- [ ] **Step 3: Реалізувати** (перенести з `server.js`, секції Backups/Icons/Link checker; кеш індексу іконок — модульна змінна, як в оригіналі).
-- [ ] **Step 4: Запустити — PASS**, `pnpm lint`.
-- [ ] **Step 5: Commit** — `feat(editor): backups, icons, link checker and optional restart`
+- [x] **Step 1: Тести** — `safeIconName('My Icon!.PNG')` → `'my-icon-.png'`-подібний безпечний результат без `/` і провідних крапок (точні значення виконавець фіксує за логікою оригіналу); `storeIcon` відхиляє `text/html` і буфер >15 MB; `icons/fetch` відхиляє `http://127.0.0.1/x.png` і `file:///etc/passwd` (400); `check-links` ігнорує не-http(s) і обмежує 200 URL.
+- [x] **Step 2: Запустити — FAIL.**
+- [x] **Step 3: Реалізувати** (перенести з `server.js`, секції Backups/Icons/Link checker; кеш індексу іконок — модульна змінна, як в оригіналі).
+- [x] **Step 4: Запустити — PASS**, `pnpm lint`.
+- [x] **Step 5: Commit** — `feat(editor): backups, icons, link checker and optional restart`
+
+**Виконано 2026-11-25. Відхилення й факти:**
+- Тести маршрутів — у `src/__tests__/pages/api/editor/` (`icons-fetch`, `check-links`, `backups`), `icons.test.js` — поруч із `src/utils/editor/icons.js` (див. примітку до Task 2). Нові маршрути проходять `auth-boundary.test.js` (88/88).
+- Додатково до плану: `assertFetchableUrl` (http/https; DNS-резолв; відхиляє loopback, `0.0.0.0`, link-local, IPv4-mapped IPv6), `fetchRemoteImage` перевіряє кожен редирект заново (`302 → 127.0.0.1` блокується). Залишкове обмеження — DNS-відповідь може змінитися між перевіркою й запитом (описано в коментарі).
+- `restore` перевіряє id й ім'я через `readBackup` до запису (в оригіналі ім'я перевірялося пізніше). Іконки з `icons/local/` віддаються з `Content-Security-Policy: sandbox`, щоб SVG не виконував скрипти. `restart` без `DOCKER_PROXY` → 404 (оригінал давав 400).
+- `icons/served` бере базу з `HOMEPAGE_URL`, інакше `http://127.0.0.1:$PORT` (редактор тепер у тому ж процесі, що й Homepage).
+- Перевірки: `pnpm vitest run src/utils/editor src/__tests__/pages/api/editor` — 92/92; `eslint` і `prettier` на змінених папках чисті. Повний `pnpm test` ще не завершився (див. Task 2).
 
 ---
 
