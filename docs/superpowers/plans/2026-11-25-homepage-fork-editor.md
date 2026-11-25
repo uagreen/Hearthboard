@@ -160,12 +160,19 @@
 - Produces: `classifyExample(text: string): {text, insertable, reason?}` у `catalog-examples.mjs` — `insertable` лише якщо YAML парситься у mapping (не список, не scalar); `...` як окремий рядок → `reason: "placeholder"`.
 - Скрипт читає `./docs` форку, версію бере з `package.json` (`version`), без клонування.
 
-- [ ] **Step 1: Тести** — `classifyExample('title: x')` → `insertable: true`; `classifyExample('layout:\n  ...\n  A:\n    tab: B')` → `insertable:false, reason:'placeholder'`; `classifyExample('- Group:\n    - S:\n        href: x')` → `reason:'not-a-mapping'`; інтеграційний: після `build-catalog` `serviceWidgets.length > 0`, кожен має `type` і масив `fields`; для всіх прикладів сторінки `settings` — `insertable === true` ⇒ парситься у mapping.
-- [ ] **Step 2: Запустити — FAIL.**
-- [ ] **Step 3: Реалізувати**: перенести генератор, замінити `examples` на результат `classifyExample`; шляхи `docs/` — відносно кореня форку. Прогнати проти документації 2.8.0 і **вручну звірити** кількість віджетів із `ls docs/widgets/services | wc -l` (різниця пояснюється в коментарі, а не ігнорується).
-- [ ] **Step 4: `package.json`**: `"editor:catalog": "node scripts/editor/build-catalog.mjs"`, `"prebuild"`/`"predev"` запускають каталог і Task 5 vendor-скрипт.
-- [ ] **Step 5: Запустити — PASS**, `pnpm lint`, `pnpm editor:catalog` створює файл.
-- [ ] **Step 6: Commit** — `feat(editor): generate widget/settings catalog from the fork's own docs`
+- [x] **Step 1: Тести** — `classifyExample('title: x')` → `insertable: true`; `classifyExample('layout:\n  ...\n  A:\n    tab: B')` → `insertable:false, reason:'placeholder'`; `classifyExample('- Group:\n    - S:\n        href: x')` → `reason:'not-a-mapping'`; інтеграційний: після `build-catalog` `serviceWidgets.length > 0`, кожен має `type` і масив `fields`; для всіх прикладів сторінки `settings` — `insertable === true` ⇒ парситься у mapping.
+- [x] **Step 2: Запустити — FAIL.**
+- [x] **Step 3: Реалізувати**: перенести генератор, замінити `examples` на результат `classifyExample`; шляхи `docs/` — відносно кореня форку. Прогнати проти документації 2.8.0 і **вручну звірити** кількість віджетів із `ls docs/widgets/services | wc -l` (різниця пояснюється в коментарі, а не ігнорується).
+- [x] **Step 4: `package.json`**: `"editor:catalog": "node scripts/editor/build-catalog.mjs"`, `"prebuild"`/`"predev"` запускають каталог і Task 5 vendor-скрипт.
+- [x] **Step 5: Запустити — PASS**, `pnpm lint`, `pnpm editor:catalog` створює файл.
+- [x] **Step 6: Commit** — `feat(editor): generate widget/settings catalog from the fork's own docs`
+
+**Виконано 2026-11-25. Відхилення й факти:**
+- Тест — `src/utils/editor/catalog.test.js` (імпортує `scripts/editor/*.mjs`), `vitest.config.mjs` не змінювався. `build-catalog.mjs` експортує `buildCatalog(root)`; CLI пише `public/editor/catalog.json`.
+- Ручна звірка (Step 3): **164 service-віджети = 164 документи** у `docs/widgets/services` (без `index.md`), **13 info = 13**; пропущених, дублікатів типів і документів із кількома типами немає. Звірку закріплено тестом. Прикладів у `configs`: 65 вставних із 97.
+- `package.json`: `editor:catalog`, `predev`, `prebuild` (vendor-скрипт додасть Task 5). `.gitignore`: `public/editor/catalog.json`.
+- **Для Task 6:** у Dockerfile збірка виконується лише при `CI != true`, тож у CI-режимі `prebuild` не спрацює — перед `docker build` у workflow треба згенерувати каталог/vendor або прибрати залежність від `CI`.
+- Перевірки: `pnpm vitest run src/utils/editor` — 75/75; eslint і prettier на `scripts/editor`, `src/utils/editor`, `package.json` чисті; `pnpm editor:catalog` створює файл.
 
 ---
 
