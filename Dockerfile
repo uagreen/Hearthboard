@@ -41,8 +41,8 @@ LABEL org.opencontainers.image.licenses='GPL-3.0'
 # Setup
 WORKDIR /app
 
-# Copy some files from context
-COPY --link --chown=1000:1000 /public ./public/
+# Copy public (including the files generated at build time for the editor) and the entrypoint
+COPY --link --from=builder --chown=1000:1000 /app/public ./public/
 COPY --link --chmod=755 docker-entrypoint.sh /usr/local/bin/
 
 # Copy only necessary files from the build stage

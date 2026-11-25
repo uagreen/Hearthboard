@@ -18,6 +18,10 @@ const nextConfig = {
     unoptimized: true,
   },
   i18n,
+  async rewrites() {
+    // The editor UI is plain static files in public/editor; /editor opens its index page.
+    return [{ source: "/editor", destination: "/editor/index.html" }];
+  },
 };
 
 module.exports = nextConfig;

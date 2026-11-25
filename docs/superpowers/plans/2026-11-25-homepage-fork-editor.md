@@ -188,13 +188,25 @@
 - Кнопка «Use this» показується лише для `example.insertable`; для інших — підказка з `reason` («прикладі є шаблон, скопіюйте вручну» / «це список, вставляється через вкладку Services»).
 - `scripts/editor/copy-vendor.mjs` копіює `sortablejs/modular`, `marked/lib/marked.esm.js`, `yaml/browser/dist` у `public/editor/vendor/{sortable,marked,yaml}`.
 
-- [ ] **Step 1: Тести `catalog-utils.test.js`** — кожен елемент `sectionsWithPage(catalog.configs)` має `page ∈ {settings, services, bookmarks, docker, …}` і `configs[s.page].doc` визначений (відтворює помилку `Cannot read properties of undefined (reading 'doc')`).
-- [ ] **Step 2: Запустити — FAIL.**
-- [ ] **Step 3: Реалізувати** `catalog-utils.js`, виправити `views.js` (рядки 111–130 оригіналу), адаптувати «Use this» до `{text, insertable, reason}`, оновити URL у всіх модулях.
-- [ ] **Step 4: Playwright e2e `editor.spec.js`** — з `HOMEPAGE_EDITOR=true EDITOR_ALLOW_NO_AUTH=true` і тестовим `HOMEPAGE_CONFIG_DIR`: відкрити `/editor`, пройти кожну вкладку (`improve, appearance, services, bookmarks, widgets, settings, files, backups`) і в Settings клікнути перші 5 пунктів бічного меню; тест падає на будь-якому `pageerror` або `console.error`. Додати скрипт `test:e2e`.
-- [ ] **Step 5: Запустити — PASS**: `pnpm vitest run src/utils/editor/catalog-utils.test.js`; `pnpm test:e2e`. **Примітка:** у середовищі розробки Chromium потребує системних бібліотек (`libnspr4`, `libnss3`); якщо їх нема, e2e запускається в CI, а в звіті прямо зазначається, що локально він не виконувався.
-- [ ] **Step 6: Ручна перевірка** — `pnpm dev`, відкрити `/editor`, вкладка Settings: меню клікається, «Use this» працює для вставного прикладу й прихована з поясненням для решти.
-- [ ] **Step 7: Commit** — `feat(editor): mount UI at /editor, fix Settings navigation crash`
+- [x] **Step 1: Тести `catalog-utils.test.js`** — кожен елемент `sectionsWithPage(catalog.configs)` має `page ∈ {settings, services, bookmarks, docker, …}` і `configs[s.page].doc` визначений (відтворює помилку `Cannot read properties of undefined (reading 'doc')`).
+- [x] **Step 2: Запустити — FAIL.**
+- [x] **Step 3: Реалізувати** `catalog-utils.js`, виправити `views.js` (рядки 111–130 оригіналу), адаптувати «Use this» до `{text, insertable, reason}`, оновити URL у всіх модулях.
+- [x] **Step 4: Playwright e2e `editor.spec.js`** — з `HOMEPAGE_EDITOR=true EDITOR_ALLOW_NO_AUTH=true` і тестовим `HOMEPAGE_CONFIG_DIR`: відкрити `/editor`, пройти кожну вкладку (`improve, appearance, services, bookmarks, widgets, settings, files, backups`) і в Settings клікнути перші 5 пунктів бічного меню; тест падає на будь-якому `pageerror` або `console.error`. Додати скрипт `test:e2e`.
+- [x] **Step 5: Запустити — PASS**: `pnpm vitest run src/utils/editor/catalog-utils.test.js`; `pnpm test:e2e`. **Примітка:** у середовищі розробки Chromium потребує системних бібліотек (`libnspr4`, `libnss3`); якщо їх нема, e2e запускається в CI, а в звіті прямо зазначається, що локально він не виконувався.
+- [x] **Step 6: Ручна перевірка** — `pnpm dev`, відкрити `/editor`, вкладка Settings: меню клікається, «Use this» працює для вставного прикладу й прихована з поясненням для решти.
+- [x] **Step 7: Commit** — `feat(editor): mount UI at /editor, fix Settings navigation crash`
+
+**Виконано 2026-11-25. Відхилення й факти:**
+- Статика редактора обслуговується за `/editor/…` (а не `/vendor/…`): імпорти в UI — `/editor/vendor/{sortable,marked,yaml}/…`; `index.html` підключає `/editor/style.css` і `/editor/app.js` абсолютними шляхами, бо сторінка віддається з `/editor` через rewrite. `catalog.json` читається як `/editor/catalog.json`, `restart-homepage` → `/api/editor/restart`, `icons/index` → `/api/editor/icons`.
+- `next.config.js`: rewrite `/editor → /editor/index.html` **без** `locale: false` — з `locale: false` при i18n Next віддавав 404 (виявлено вручною перевіркою; статика при цьому була доступна).
+- Vendor-скрипт копіює ще й `docs/assets` → `vendor/docs-assets` (4.7 МБ): документація вбудовує картинки як `../../assets/*.webp`, без цього розділи Card Style/Block Style/Font/Widget давали 404. `markdown()` переписує ці шляхи.
+- Тести: `catalog-utils.test.js`, `vendor.test.js`; Playwright e2e (`tests/e2e/editor.spec.js`, `playwright.config.js`, `pnpm test:e2e`) проходить **усі** вкладки та **всі 54** пункти меню Settings (а не лише 5), перевіряє «Use this» і підказки для невставних прикладів, падає на будь-якому `pageerror`/`console.error`.
+- **Баги перенесеного UI, знайдені e2e і виправлені:** (1) клієнт кликав `/api/editor/icons/index` (маршрут — `/api/editor/icons`); (2) гонка в `show()`: запізніла відповідь старої вкладки перезаписувала поточну — тепер рендер вкладок послідовний, пропущені вкладки не рендеряться; (3) 404 на картинках документації. Також `app.js` показує пояснення, якщо редактор вимкнений (`HOMEPAGE_EDITOR` не `true`) замість порожнього екрана.
+- `eslint.config.mjs`: у `globalIgnores` додано `public/editor/vendor/`, `test-results/`, `playwright-report/` (згенерований чужий код ламав би `pnpm lint`).
+- Залежності (dev): `marked`, `sortablejs`, `@playwright/test`; `predev`/`prebuild` → `editor:assets` (каталог + vendor). Dockerfile: `COPY --from=builder /app/public`. Chromium для Playwright довелось докачати (`playwright install chromium`, ревізія 1255).
+- **Step 6 (ручна перевірка) виконано скриптом Playwright (headless), а не людиною у браузері** — людині варто відкрити `/editor` у `pnpm dev` і пройтись по Settings. Кнопка «Use this» і підказки перевірені автоматично.
+- Перевірки: `pnpm vitest run src/utils/editor src/__tests__/pages/api/editor` — 116/116; `pnpm test:e2e` — 2/2; eslint і prettier на змінених файлах чисті.
+- Відомо: `next dev` дописує блок `nextjs-agent-rules` у `AGENTS.md` — це не наша правка, у коміт не включено.
 
 ---
 

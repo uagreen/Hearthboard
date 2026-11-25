@@ -1,0 +1,199 @@
+// Loaded config files, their working copies, and the review-then-save flow.
+import { api, clone, h, modal, renderDiff, toast } from "./lib.js";
+
+export const store = {
+  info: null,
+  catalog: null,
+  files: {}, // name -> {text, data, mtime, errors, model, dirty}
+  listeners: new Set(),
+};
+
+export async function loadFile(name, force = false) {
+  if (store.files[name] && !force) return store.files[name];
+  const f = await api(`/api/editor/file/${encodeURIComponent(name)}`);
+  store.files[name] = { ...f, model: clone(f.data), dirty: false };
+  updateDirty();
+  return store.files[name];
+}
+
+export function markDirty(name) {
+  store.files[name].dirty = true;
+  updateDirty();
+}
+
+export function discard(name) {
+  const f = store.files[name];
+  f.model = clone(f.data);
+  f.dirty = false;
+  updateDirty();
+}
+
+export const anyDirty = () => Object.values(store.files).some((f) => f.dirty);
+
+export const dirtyFiles = () =>
+  Object.keys(store.files)
+    .filter((n) => store.files[n].dirty)
+    .sort();
+
+// What to save for a file: edited text (Settings/Files tabs) or the edited structure (everything else).
+export function bodyFor(name) {
+  const f = store.files[name];
+  return f.draft != null && f.draft !== f.text ? { text: f.draft } : { data: f.model };
+}
+
+export function updateDirty() {
+  const n = dirtyFiles().length;
+  const btn = document.getElementById("save-all");
+  btn.hidden = !n;
+  btn.textContent = `Save… (${n})`;
+  btn.title = `Unsaved changes in: ${dirtyFiles().join(", ")}`;
+}
+
+// Header "Save…" button: every file with unsaved changes, each with Review & Save.
+export function openSaveDialog() {
+  const m = modal("Unsaved changes", { narrow: true });
+  const draw = () => {
+    const names = dirtyFiles();
+    if (!names.length) {
+      m.close();
+      return;
+    }
+    m.body.replaceChildren(
+      h(
+        "p",
+        { class: "muted" },
+        "These files have changes that are not on your Homepage yet. Each save shows exactly what changes first.",
+      ),
+      h(
+        "div",
+        { class: "list" },
+        names.map((name) =>
+          h(
+            "div",
+            { class: "list-row" },
+            h("div", { class: "grow" }, h("b", {}, name)),
+            h(
+              "button",
+              {
+                class: "ghost small",
+                onclick: () => {
+                  const f = store.files[name];
+                  f.model = clone(f.data);
+                  f.draft = null;
+                  f.dirty = false;
+                  updateDirty();
+                  draw();
+                  refreshView();
+                },
+              },
+              "Discard",
+            ),
+            h(
+              "button",
+              {
+                class: "small",
+                onclick: async () => {
+                  if (await reviewAndSave(name, bodyFor(name))) {
+                    draw();
+                    refreshView();
+                  }
+                },
+              },
+              "Review & Save",
+            ),
+          ),
+        ),
+      ),
+    );
+  };
+  draw();
+}
+
+// Re-render whichever tab is showing, so it reflects saves made from the header.
+export const refreshView = () => document.querySelector("#tabs button.active")?.click();
+
+window.addEventListener("beforeunload", (e) => {
+  if (anyDirty()) e.preventDefault();
+});
+
+// Show what will change, then save. body = {data} (merged, keeps comments) or {text}.
+export async function reviewAndSave(name, body = { data: store.files[name].model }) {
+  let preview;
+  try {
+    preview = await api(`/api/editor/preview/${encodeURIComponent(name)}`, { json: body });
+  } catch (e) {
+    return toast(e.message, true);
+  }
+  if (!preview.changed) {
+    toast(`No changes to ${name}`);
+    return false;
+  }
+  return new Promise((resolve) => {
+    let saved = false;
+    const m = modal(`Review changes to ${name}`, { onClose: () => resolve(saved) });
+    const contentOnly = preview.diff !== preview.contentDiff;
+    const diffBox = h("div");
+    const show = (ignoreWs) => diffBox.replaceChildren(renderDiff(ignoreWs ? preview.contentDiff : preview.diff));
+    show(contentOnly);
+    if (contentOnly) {
+      m.body.append(
+        h(
+          "div",
+          { class: "banner info" },
+          "This save also tidies the file's indentation (formatting only, nothing else changes). ",
+          "The diff below hides those spacing changes so you can see the real edits. ",
+          h(
+            "label",
+            { class: "inline" },
+            h("input", { type: "checkbox", style: "width:auto", onchange: (e) => show(!e.target.checked) }),
+            " show spacing changes too",
+          ),
+        ),
+      );
+    }
+    if (preview.errors?.length) m.body.append(h("div", { class: "errors" }, preview.errors.join("\n")));
+    m.body.append(
+      h(
+        "p",
+        { class: "muted" },
+        "Secrets are hidden in this view. A backup of the current file is made before saving.",
+      ),
+      diffBox,
+    );
+    const saveBtn = h(
+      "button",
+      {
+        disabled: preview.errors?.length > 0,
+        onclick: async () => {
+          saveBtn.disabled = true;
+          try {
+            const f = store.files[name];
+            const r = await api(`/api/editor/save/${encodeURIComponent(name)}`, {
+              json: { ...body, baseMtime: f?.exists ? f.mtime : undefined },
+            });
+            saved = r.saved;
+            await loadFile(name, true);
+            updateDirty();
+            toast(`Saved ${name}${r.backup ? " (backup made)" : ""}`);
+            reloadPreview();
+            m.close();
+          } catch (e) {
+            toast(e.message, true);
+            saveBtn.disabled = false;
+          }
+        },
+      },
+      "Save to Homepage",
+    );
+    m.foot.append(
+      h("span", { class: "spacer" }),
+      h("button", { class: "ghost", onclick: () => m.close() }, "Back to editing"),
+      saveBtn,
+    );
+  });
+}
+
+export function reloadPreview() {
+  const f = document.getElementById("preview-frame");
+  if (f.getAttribute("src")) document.getElementById("preview-reload").click();
+}

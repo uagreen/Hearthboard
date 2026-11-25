@@ -59,5 +59,14 @@ export default defineConfig([
       "import/order": "off",
     },
   },
-  globalIgnores(["./config/", "./coverage/", "./.venv/", "./.next/", "./site/"]),
+  globalIgnores([
+    "./config/",
+    "./coverage/",
+    "./.venv/",
+    "./.next/",
+    "./site/",
+    "./public/editor/vendor/",
+    "./test-results/",
+    "./playwright-report/",
+  ]),
 ]);
