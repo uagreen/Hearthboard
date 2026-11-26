@@ -76,4 +76,45 @@ describe("widgets/transmission/proxy", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual(Buffer.from("ok"));
   });
+
+  describe("torrent-get fields", () => {
+    const run = async (extra) => {
+      getServiceWidget.mockResolvedValue({
+        type: "transmission",
+        url: "http://tr",
+        username: "u",
+        password: "p",
+        ...extra,
+      });
+      httpProxy.mockResolvedValue([200, "application/json", Buffer.from("{}"), {}]);
+      await transmissionProxyHandler({ query: { group: "g", service: "svc", index: "0" } }, createMockRes());
+      return JSON.parse(httpProxy.mock.calls[0][1].body).arguments.fields;
+    };
+
+    it("keeps the original four fields when showDownloads is absent", async () => {
+      expect(await run({})).toEqual(["percentDone", "status", "rateDownload", "rateUpload"]);
+    });
+
+    it("requests extra torrent fields when showDownloads is true", async () => {
+      const fields = await run({ showDownloads: true });
+      expect(fields).toEqual(
+        expect.arrayContaining([
+          "percentDone",
+          "status",
+          "rateDownload",
+          "rateUpload",
+          "id",
+          "name",
+          "eta",
+          "totalSize",
+          "error",
+          "errorString",
+        ]),
+      );
+    });
+
+    it('requests extra torrent fields when showDownloads is the string "true"', async () => {
+      expect(await run({ showDownloads: "true" })).toContain("name");
+    });
+  });
 });

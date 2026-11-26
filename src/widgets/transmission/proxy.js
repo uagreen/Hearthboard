@@ -10,6 +10,9 @@ const proxyName = "transmissionProxyHandler";
 const headerCacheKey = `${proxyName}__headers`;
 const logger = createLogger(proxyName);
 
+const BASE_FIELDS = ["percentDone", "status", "rateDownload", "rateUpload"];
+const DOWNLOAD_FIELDS = ["id", "name", "eta", "totalSize", "error", "errorString"];
+
 export default async function transmissionProxyHandler(req, res) {
   const { group, service, index } = req.query;
 
@@ -40,10 +43,11 @@ export default async function transmissionProxyHandler(req, res) {
 
   const method = "POST";
   const auth = `${widget.username}:${widget.password}`;
+  const wantsDownloads = widget.showDownloads === true || widget.showDownloads === "true";
   const body = JSON.stringify({
     method: "torrent-get",
     arguments: {
-      fields: ["percentDone", "status", "rateDownload", "rateUpload"],
+      fields: wantsDownloads ? [...BASE_FIELDS, ...DOWNLOAD_FIELDS] : BASE_FIELDS,
     },
   });
 
