@@ -59,6 +59,7 @@
 
 - Produces (`widget.js` mappings): `Users: {endpoint: "Users"}`, `Views: {endpoint: "UserViews", params: ["userId"]}`, `Latest: {endpoint: "Items/Latest", params: ["userId", "parentId", "limit"]}`, `Resume: {endpoint: "UserItems/Resume", params: ["userId", "limit", "includeItemTypes"]}`.
 - Produces (`library-utils.js`, all pure):
+
   - `clampCount(value: unknown, fallback = 5): number` — integer 1–10, otherwise `fallback`.
   - `webBase(href: string | undefined): string | null` — `https://host/path/web` without trailing slash; `null` for empty, `"#"` or non-http(s).
   - `libraryUrl(href, view: {Id, CollectionType?}): string | null`
