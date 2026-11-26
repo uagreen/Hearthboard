@@ -66,6 +66,7 @@ You can also find a list of all available service widgets in the sidebar navigat
 - [Homebridge](homebridge.md)
 - [iFrame](iframe.md)
 - [Immich](immich.md)
+- [INPX Library](inpxlibrary.md)
 - [Jackett](jackett.md)
 - [JDownloader](jdownloader.md)
 - [Jellyfin](jellyfin.md)
