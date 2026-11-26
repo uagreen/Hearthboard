@@ -278,7 +278,12 @@
         "download": "Download",
         "upload": "Upload",
         "leech": "Leech",
-        "seed": "Seed"
+        "seed": "Seed",
+        "queued": "Queued",
+        "paused": "Paused",
+        "errored": "Errors",
+        "downloads": "Downloads",
+        "no_downloads": "Nothing is downloading"
     },
     "qbittorrent": {
         "download": "Download",

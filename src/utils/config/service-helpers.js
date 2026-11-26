@@ -365,6 +365,10 @@ export function cleanServiceGroups(groups) {
           count,
           shelf,
 
+          // transmission (expandSections is shared)
+          showDownloads,
+          downloadsCount,
+
           // emby, jellyfin, tautulli, tracearr
           enableUser,
           expandOneStreamToTwoRows,
@@ -623,6 +627,12 @@ export function cleanServiceGroups(groups) {
           if (expandSections !== undefined) widget.expandSections = !!JSON.parse(expandSections);
           if (count !== undefined) widget.count = Number(JSON.parse(count));
           if (shelf) widget.shelf = shelf;
+        }
+        if (type === "transmission") {
+          // username and password stay on the server
+          if (showDownloads !== undefined) widget.showDownloads = !!JSON.parse(showDownloads);
+          if (expandSections !== undefined) widget.expandSections = !!JSON.parse(expandSections);
+          if (downloadsCount !== undefined) widget.downloadsCount = Number(JSON.parse(downloadsCount));
         }
         if (["emby", "jellyfin", "tautulli", "tracearr"].includes(type)) {
           if (expandOneStreamToTwoRows !== undefined)

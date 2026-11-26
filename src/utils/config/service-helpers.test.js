@@ -592,6 +592,42 @@ describe("utils/config/service-helpers", () => {
     }
   });
 
+  it("cleanServiceGroups passes transmission options to the client without the credentials", async () => {
+    const { cleanServiceGroups } = await import("./service-helpers");
+
+    const rawGroups = [
+      {
+        name: "Downloads",
+        services: [
+          {
+            name: "svc",
+            weight: 100,
+            widgets: [
+              {
+                type: "transmission",
+                showDownloads: "true",
+                downloadsCount: "8",
+                expandSections: true,
+                username: "u",
+                password: "secret",
+              },
+              { type: "transmission" },
+            ],
+          },
+        ],
+        groups: [],
+      },
+    ];
+
+    const [configured, plain] = cleanServiceGroups(rawGroups)[0].services[0].widgets;
+    expect(configured).toMatchObject({ showDownloads: true, downloadsCount: 8, expandSections: true });
+    expect(configured).not.toHaveProperty("username");
+    expect(configured).not.toHaveProperty("password");
+    for (const key of ["showDownloads", "downloadsCount", "expandSections"]) {
+      expect(plain).not.toHaveProperty(key);
+    }
+  });
+
   it("cleanServiceGroups removes calendar integration urls from frontend widget payload", async () => {
     const mod = await import("./service-helpers");
     const { cleanServiceGroups } = mod;
