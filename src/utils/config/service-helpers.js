@@ -348,6 +348,16 @@ export function cleanServiceGroups(groups) {
           enableNowPlaying,
           enableMediaControl,
 
+          // jellyfin
+          showLibraries,
+          showContinueWatching,
+          showLatest,
+          latestCount,
+          continueCount,
+          enableUserSwitch,
+          expandSections,
+          user,
+
           // emby, jellyfin, tautulli, tracearr
           enableUser,
           expandOneStreamToTwoRows,
@@ -587,6 +597,16 @@ export function cleanServiceGroups(groups) {
           if (enableMediaControl !== undefined) widget.enableMediaControl = !!JSON.parse(enableMediaControl);
           if (enableBlocks !== undefined) widget.enableBlocks = JSON.parse(enableBlocks);
           if (enableNowPlaying !== undefined) widget.enableNowPlaying = JSON.parse(enableNowPlaying);
+        }
+        if (type === "jellyfin") {
+          if (showLibraries !== undefined) widget.showLibraries = !!JSON.parse(showLibraries);
+          if (showContinueWatching !== undefined) widget.showContinueWatching = !!JSON.parse(showContinueWatching);
+          if (showLatest !== undefined) widget.showLatest = !!JSON.parse(showLatest);
+          if (enableUserSwitch !== undefined) widget.enableUserSwitch = !!JSON.parse(enableUserSwitch);
+          if (expandSections !== undefined) widget.expandSections = !!JSON.parse(expandSections);
+          if (latestCount !== undefined) widget.latestCount = Number(JSON.parse(latestCount));
+          if (continueCount !== undefined) widget.continueCount = Number(JSON.parse(continueCount));
+          if (user) widget.user = user;
         }
         if (["emby", "jellyfin", "tautulli", "tracearr"].includes(type)) {
           if (expandOneStreamToTwoRows !== undefined)

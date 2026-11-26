@@ -41,11 +41,11 @@
 
 - Produces: for `type: jellyfin`, `widget.showLibraries|showContinueWatching|showLatest|enableUserSwitch|expandSections: boolean`, `widget.latestCount|continueCount: number`, `widget.user: string`, present only when configured.
 
-- [ ] **Step 1: Write the failing test** `cleanServiceGroups passes jellyfin library options to the client` next to the existing jellyfin/emby option tests (copy their setup): a jellyfin widget with `showLibraries: true, showContinueWatching: true, showLatest: true, latestCount: 4, continueCount: 3, user: "anna", enableUserSwitch: false, expandSections: true` yields exactly those values; one with none of them yields none of those keys (`"showLatest" in widget === false`).
-- [ ] **Step 2: Run** `pnpm vitest run src/utils/config/service-helpers.test.js --testTimeout 120000 --hookTimeout 120000`. Expected: the new test FAILS (keys undefined), others pass.
-- [ ] **Step 3: Implement** the pass-through in the jellyfin block: booleans with `!!JSON.parse(x)`, counts with `Number(JSON.parse(x))`, `user` as string; add the names to the destructuring list under the existing `// emby, jellyfin` comment.
-- [ ] **Step 4: Run** the same command. Expected: PASS; run prettier + eslint on both files.
-- [ ] **Step 5: Commit** `feat(jellyfin): pass library section options to the widget client`
+- [x] **Step 1: Write the failing test** `cleanServiceGroups passes jellyfin library options to the client` next to the existing jellyfin/emby option tests (copy their setup): a jellyfin widget with `showLibraries: true, showContinueWatching: true, showLatest: true, latestCount: 4, continueCount: 3, user: "anna", enableUserSwitch: false, expandSections: true` yields exactly those values; one with none of them yields none of those keys (`"showLatest" in widget === false`).
+- [x] **Step 2: Run** `pnpm vitest run src/utils/config/service-helpers.test.js --testTimeout 120000 --hookTimeout 120000`. Expected: the new test FAILS (keys undefined), others pass.
+- [x] **Step 3: Implement** the pass-through in the jellyfin block: booleans with `!!JSON.parse(x)`, counts with `Number(JSON.parse(x))`, `user` as string; add the names to the destructuring list under the existing `// emby, jellyfin` comment.
+- [x] **Step 4: Run** the same command. Expected: PASS; run prettier + eslint on both files.
+- [x] **Step 5: Commit** `feat(jellyfin): pass library section options to the widget client`
 
 ### Task 2: Proxy mappings and pure helpers
 

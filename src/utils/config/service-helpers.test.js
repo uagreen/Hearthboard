@@ -489,6 +489,61 @@ describe("utils/config/service-helpers", () => {
     expect(widgets.find((w) => w.type === "lubelogger")).toEqual(expect.objectContaining({ vehicleID: 12 }));
   });
 
+  it("cleanServiceGroups passes jellyfin library options to the client and omits unset ones", async () => {
+    const { cleanServiceGroups } = await import("./service-helpers");
+
+    const rawGroups = [
+      {
+        name: "Media",
+        services: [
+          {
+            name: "svc",
+            weight: 100,
+            widgets: [
+              {
+                type: "jellyfin",
+                showLibraries: true,
+                showContinueWatching: "true",
+                showLatest: true,
+                latestCount: 4,
+                continueCount: "3",
+                user: "anna",
+                enableUserSwitch: false,
+                expandSections: true,
+              },
+              { type: "jellyfin" },
+            ],
+          },
+        ],
+        groups: [],
+      },
+    ];
+
+    const [configured, plain] = cleanServiceGroups(rawGroups)[0].services[0].widgets;
+    expect(configured).toMatchObject({
+      showLibraries: true,
+      showContinueWatching: true,
+      showLatest: true,
+      latestCount: 4,
+      continueCount: 3,
+      user: "anna",
+      enableUserSwitch: false,
+      expandSections: true,
+    });
+    for (const key of [
+      "showLibraries",
+      "showContinueWatching",
+      "showLatest",
+      "latestCount",
+      "continueCount",
+      "user",
+      "enableUserSwitch",
+      "expandSections",
+    ]) {
+      expect(plain).not.toHaveProperty(key);
+    }
+  });
+
   it("cleanServiceGroups removes calendar integration urls from frontend widget payload", async () => {
     const mod = await import("./service-helpers");
     const { cleanServiceGroups } = mod;
