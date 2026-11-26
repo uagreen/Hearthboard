@@ -10,7 +10,6 @@ import { getURLSearchParams } from "utils/proxy/api-helpers";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 import withWidgetFields from "utils/widget-fields";
 
-
 const DEFAULT_FIELDS = ["movies", "series", "episodes", "songs"];
 
 function ticksToTime(ticks) {
