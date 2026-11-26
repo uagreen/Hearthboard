@@ -33,6 +33,14 @@ describe("pages/api/releases", () => {
     expect(res.body).toEqual([{ tag_name: "v1" }]);
   });
 
+  it("checks the releases of this fork, not of upstream Homepage", async () => {
+    cachedRequest.mockResolvedValueOnce([]);
+
+    await handler({}, createMockRes());
+
+    expect(cachedRequest).toHaveBeenCalledWith("https://api.github.com/repos/uagreen/Hearthboard/releases", 5);
+  });
+
   it("returns [] when cachedRequest throws", async () => {
     cachedRequest.mockRejectedValueOnce(new Error("nope"));
 

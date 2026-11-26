@@ -5,7 +5,7 @@ import { cachedRequest } from "utils/proxy/http";
 const logger = createLogger("releases");
 
 async function handler(req, res) {
-  const releasesURL = "https://api.github.com/repos/gethomepage/homepage/releases";
+  const releasesURL = "https://api.github.com/repos/uagreen/Hearthboard/releases";
   try {
     return res.send(await cachedRequest(releasesURL, 5));
   } catch (e) {

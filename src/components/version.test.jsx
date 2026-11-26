@@ -61,7 +61,7 @@ describe("components/version", () => {
     render(<Version />);
 
     const links = screen.getAllByRole("link");
-    expect(links.find((a) => a.getAttribute("href")?.includes("/releases/tag/1.2.3"))).toBeTruthy();
+    expect(links.find((a) => a.getAttribute("href") === "https://github.com/uagreen/Hearthboard/releases/tag/1.2.3")).toBeTruthy();
     expect(links.find((a) => a.getAttribute("href") === "http://example.com/release")).toBeTruthy();
   });
 
