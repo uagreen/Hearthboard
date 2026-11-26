@@ -219,11 +219,20 @@
 **Interfaces:**
 - Consumes: усі попередні задачі.
 
-- [ ] **Step 1:** Написати `docs/configs/editor.md` і розділ у README (скріншоти — після ручної перевірки Task 5).
-- [ ] **Step 2:** CI: `lint.yml` і `pnpm test` залишити; додати `e2e.yml` (встановлення Chromium через `pnpm exec playwright install --with-deps chromium`).
+- [x] **Step 1:** Написати `docs/configs/editor.md` і розділ у README (скріншоти — після ручної перевірки Task 5).
+- [x] **Step 2:** CI: `lint.yml` і `pnpm test` залишити; додати `e2e.yml` (встановлення Chromium через `pnpm exec playwright install --with-deps chromium`).
 - [ ] **Step 3:** Зібрати образ локально: `docker build -t <fork>:dev .`, запустити з `-e HOMEPAGE_EDITOR=true -e EDITOR_PASSWORD=… -v <тестовий config>:/app/config`, переконатися, що `/editor` відкривається, зберігає зміну в `settings.yaml` і дашборд її підхоплює. Expected: файл змінено, бекап створено, `GET /` відображає зміну.
 - [ ] **Step 4:** Перевірити, що без `HOMEPAGE_EDITOR` `GET /api/editor/info` → 404 в образі.
-- [ ] **Step 5: Commit** — `docs/ci: editor docs, e2e workflow, fork image publishing`
+- [x] **Step 5: Commit** — `docs/ci: editor docs, e2e workflow, fork image publishing`
+
+**Виконано 2026-11-26. Відхилення й факти:**
+- **Кроки 3–4 (локальний `docker build`, запуск, `GET /api/editor/info` → 404 в образі) НЕ виконано: у середовищі немає `docker`.** Залишаються відкритими; виконати вручну або на CI. Поведінку без `HOMEPAGE_EDITOR` (404) покрито лише юніт-тестами `guard.test.js`.
+- Скріншотів у README немає (ручну перевірку Task 5 виконав headless-скрипт).
+- Видалено workflow, прив'язані до апстріму: `issue-triage`, `pr-triage`, `pr-quality`, `reaction-comments`, `repo-maintenance` (тексти й політика gethomepage), `crowdin` (секрети Crowdin), `docs-publish` (публікація на gethomepage.dev, guard на `gethomepage/homepage`). `release-drafter` і `lint` залишено.
+- `docker-publish.yml`: прибрано guard `gethomepage/homepage`, Docker Hub (секрети апстріму) і публікацію в Docker Hub; образ — лише `ghcr.io/<repository>` (metadata-action сам переводить у нижній регістр). Збірка в CI (`CI=true`) уже виконує `pnpm run build`, чий `prebuild` генерує каталог/vendor у `public/`, а `Dockerfile` копіює `public` з builder — окремих змін не потрібно.
+- `test.yml`: `fail_ci_if_error: false` для Codecov (у форку немає `CODECOV_TOKEN`, інакше CI червоніє).
+- `e2e.yml` без кроку завантаження звіту: репозиторій пінить дії за SHA, а я не маю перевіреного SHA для `upload-artifact`.
+- Не перевірялося: самі workflow на GitHub (YAML лише розібрано парсером), `mkdocs build`.
 
 ---
 

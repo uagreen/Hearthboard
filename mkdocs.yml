@@ -28,6 +28,7 @@ nav:
       - configs/proxmox.md
       - configs/mcp.md
       - configs/custom-css-js.md
+      - configs/editor.md
   - "Widgets":
       - widgets/index.md
       - "Service Widgets":

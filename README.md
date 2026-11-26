@@ -57,6 +57,10 @@ Homepage also has support for hundreds of 3rd-party services, including all popu
 
 Homepage has built-in support for a number of information providers, including weather, time, date, search, glances and more. System and status information presented at the top of the page. See the [Information Providers](https://gethomepage.dev/widgets/) page for more information.
 
+## Built-in Editor (Hearthboard)
+
+Hearthboard adds a configuration editor at `/editor`, running inside the same container. It keeps YAML comments, backs up every save, warns about files changed on disk and has a widget/settings catalog generated from this version's documentation. It is **off by default**: set `HOMEPAGE_EDITOR=true` and `EDITOR_PASSWORD` (or use Homepage authentication). See [docs/configs/editor.md](docs/configs/editor.md).
+
 ## Customization
 
 Homepage is highly customizable, with support for custom themes, custom CSS & JS, custom layouts, formatting, localization and more. See the [Settings](https://gethomepage.dev/configs/settings/) page for more information.
