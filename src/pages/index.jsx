@@ -4,6 +4,7 @@ import ErrorBoundary from "components/errorboundry";
 import QuickLaunch from "components/quicklaunch";
 import ServicesGroup from "components/services/group";
 import Tab, { slugifyAndEncode } from "components/tab";
+import EditorLink from "components/toggles/editor";
 import Revalidate from "components/toggles/revalidate";
 import Widget from "components/widgets/widget";
 import { useTranslation } from "next-i18next/pages";
@@ -43,9 +44,12 @@ const Version = dynamic(() => import("components/version"), {
 
 const rightAlignedWidgets = ["weatherapi", "openweathermap", "weather", "openmeteo", "search", "datetime"];
 
-export const getServerSideProps = withPageAuth(async () => ({ props: await getDashboardData() }));
+export const getServerSideProps = withPageAuth(async () => ({
+  // The editor link is shown only when the built-in editor is switched on.
+  props: { ...(await getDashboardData()), editorEnabled: process.env.HOMEPAGE_EDITOR === "true" },
+}));
 
-function Index({ initialSettings, fallback }) {
+function Index({ initialSettings, fallback, editorEnabled }) {
   const windowFocused = useWindowFocus();
   const [stale, setStale] = useState(false);
   const { data: errorsData } = useSWR("/api/validate");
@@ -135,7 +139,7 @@ function Index({ initialSettings, fallback }) {
   return (
     <SWRConfig value={{ fallback, fetcher: (resource, init) => fetch(resource, init).then((res) => res.json()) }}>
       <ErrorBoundary>
-        <Home initialSettings={initialSettings} />
+        <Home initialSettings={initialSettings} editorEnabled={editorEnabled} />
       </ErrorBoundary>
     </SWRConfig>
   );
@@ -161,7 +165,7 @@ function getAllServices(services) {
   return [...services.map(getServices).flat()];
 }
 
-function Home({ initialSettings }) {
+function Home({ initialSettings, editorEnabled }) {
   const { i18n } = useTranslation();
   const { theme, setTheme } = useContext(ThemeContext);
   const { color, setColor } = useContext(ColorContext);
@@ -465,6 +469,7 @@ function Home({ initialSettings }) {
         <div id="footer" className="flex flex-col mt-auto p-8 w-full">
           <div id="style" className="flex w-full justify-end">
             {!settings?.color && <ColorToggle />}
+            {editorEnabled && <EditorLink />}
             <Revalidate />
             <SignOut />
             {!settings.theme && <ThemeToggle />}
@@ -479,7 +484,7 @@ function Home({ initialSettings }) {
   );
 }
 
-export default function Wrapper({ initialSettings, fallback }) {
+export default function Wrapper({ initialSettings, fallback, editorEnabled }) {
   const { theme } = useContext(ThemeContext);
   const { color } = useContext(ColorContext);
   let backgroundImage = "";
@@ -552,7 +557,7 @@ export default function Wrapper({ initialSettings, fallback }) {
             backgroundBrightness && `backdrop-brightness-${initialSettings.background.brightness}`,
           )}
         >
-          <Index initialSettings={initialSettings} fallback={fallback} />
+          <Index initialSettings={initialSettings} fallback={fallback} editorEnabled={editorEnabled} />
         </div>
       </div>
     </>

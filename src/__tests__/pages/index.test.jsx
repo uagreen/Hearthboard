@@ -207,6 +207,18 @@ describe("pages/index getServerSideProps", () => {
     expect(serverSideTranslations).toHaveBeenCalledWith("en");
   });
 
+  it("tells the page whether the built-in editor is enabled", async () => {
+    const { getServerSideProps } = await import("pages/index.jsx");
+
+    vi.stubEnv("HOMEPAGE_EDITOR", "true");
+    expect((await getServerSideProps({})).props.editorEnabled).toBe(true);
+
+    vi.stubEnv("HOMEPAGE_EDITOR", "");
+    expect((await getServerSideProps({})).props.editorEnabled).toBe(false);
+
+    vi.unstubAllEnvs();
+  });
+
   it("normalizes legacy language codes before requesting translations", async () => {
     getSettings.mockReturnValueOnce({ providers: {}, language: "zh-CN" });
 
@@ -239,6 +251,7 @@ async function renderIndex({
   color = "slate",
   activeTab = "",
   settings = initialSettings,
+  editorEnabled,
 } = {}) {
   const { default: Wrapper } = await import("pages/index.jsx");
 
@@ -252,7 +265,7 @@ async function renderIndex({
       <ColorContext.Provider value={{ color, setColor }}>
         <SettingsContext.Provider value={{ settings, setSettings }}>
           <TabContext.Provider value={{ activeTab, setActiveTab }}>
-            <Wrapper initialSettings={initialSettings} fallback={fallback} />
+            <Wrapper initialSettings={initialSettings} fallback={fallback} editorEnabled={editorEnabled} />
           </TabContext.Provider>
         </SettingsContext.Provider>
       </ColorContext.Provider>
@@ -474,6 +487,18 @@ describe("pages/index Home behavior", () => {
     fireEvent.keyDown(document.body, { key: " " });
     expect(screen.getByTestId("quicklaunch")).toHaveTextContent("open:3");
     expect(state.quickLaunchProps.searchString).toBe("");
+  });
+
+  it("shows a link to the editor only when the editor is enabled", async () => {
+    const settings = { title: "Homepage", layout: {}, language: "en" };
+
+    const { unmount } = await renderIndex({ initialSettings: settings, settings, editorEnabled: true });
+    expect(await screen.findByRole("link", { name: "Editor" })).toHaveAttribute("href", "/editor");
+    unmount();
+
+    await renderIndex({ initialSettings: settings, settings, editorEnabled: false });
+    expect(await screen.findByTestId("services-group")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Editor" })).toBeNull();
   });
 
   it("renders services and bookmark groups when present", async () => {
