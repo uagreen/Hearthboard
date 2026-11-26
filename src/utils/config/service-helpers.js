@@ -358,6 +358,13 @@ export function cleanServiceGroups(groups) {
           expandSections,
           user,
 
+          // inpxlibrary (expandSections is shared with jellyfin)
+          showReading,
+          showWant,
+          showIndexing,
+          count,
+          shelf,
+
           // emby, jellyfin, tautulli, tracearr
           enableUser,
           expandOneStreamToTwoRows,
@@ -607,6 +614,15 @@ export function cleanServiceGroups(groups) {
           if (latestCount !== undefined) widget.latestCount = Number(JSON.parse(latestCount));
           if (continueCount !== undefined) widget.continueCount = Number(JSON.parse(continueCount));
           if (user) widget.user = user;
+        }
+        if (type === "inpxlibrary") {
+          // username and password stay on the server (the proxy adds the Basic header)
+          if (showReading !== undefined) widget.showReading = !!JSON.parse(showReading);
+          if (showWant !== undefined) widget.showWant = !!JSON.parse(showWant);
+          if (showIndexing !== undefined) widget.showIndexing = !!JSON.parse(showIndexing);
+          if (expandSections !== undefined) widget.expandSections = !!JSON.parse(expandSections);
+          if (count !== undefined) widget.count = Number(JSON.parse(count));
+          if (shelf) widget.shelf = shelf;
         }
         if (["emby", "jellyfin", "tautulli", "tracearr"].includes(type)) {
           if (expandOneStreamToTwoRows !== undefined)

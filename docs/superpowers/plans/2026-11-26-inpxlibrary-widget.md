@@ -60,11 +60,11 @@
 
 - Produces on the client widget (only when configured): `showReading`, `showWant`, `showIndexing`, `expandSections` (booleans), `count` (number), `shelf` (string). `fields` is already passed by the generic code. **Never** `username` or `password`.
 
-- [ ] **Step 1: Write the failing test** next to the jellyfin one: an `inpxlibrary` widget with `showReading: true, showWant: "true", showIndexing: false, expandSections: true, count: "7", shelf: "Favorites", username: "reader", password: "secret"` yields exactly those client values and has neither `username` nor `password`; a bare `inpxlibrary` widget has none of the new keys.
-- [ ] **Step 2: Run** `pnpm vitest run src/utils/config/service-helpers.test.js --testTimeout 120000 --hookTimeout 120000`. Expected: new test FAILS, the rest pass.
-- [ ] **Step 3: Implement** the pass-through with the same `!!JSON.parse(x)` / `Number(JSON.parse(x))` pattern as jellyfin.
-- [ ] **Step 4: Run** the same command. Expected: PASS; prettier.
-- [ ] **Step 5: Commit** `feat(inpxlibrary): pass widget options to the client without credentials`
+- [x] **Step 1: Write the failing test** next to the jellyfin one: an `inpxlibrary` widget with `showReading: true, showWant: "true", showIndexing: false, expandSections: true, count: "7", shelf: "Favorites", username: "reader", password: "secret"` yields exactly those client values and has neither `username` nor `password`; a bare `inpxlibrary` widget has none of the new keys.
+- [x] **Step 2: Run** `pnpm vitest run src/utils/config/service-helpers.test.js --testTimeout 120000 --hookTimeout 120000`. Expected: new test FAILS, the rest pass.
+- [x] **Step 3: Implement** the pass-through with the same `!!JSON.parse(x)` / `Number(JSON.parse(x))` pattern as jellyfin.
+- [x] **Step 4: Run** the same command. Expected: PASS; prettier.
+- [x] **Step 5: Commit** `feat(inpxlibrary): pass widget options to the client without credentials`
 
 ### Task 3: Pure helpers
 

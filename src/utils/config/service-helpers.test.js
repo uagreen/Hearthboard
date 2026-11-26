@@ -544,6 +544,54 @@ describe("utils/config/service-helpers", () => {
     }
   });
 
+  it("cleanServiceGroups passes inpxlibrary options to the client without the credentials", async () => {
+    const { cleanServiceGroups } = await import("./service-helpers");
+
+    const rawGroups = [
+      {
+        name: "Media",
+        services: [
+          {
+            name: "svc",
+            weight: 100,
+            widgets: [
+              {
+                type: "inpxlibrary",
+                fields: ["books", "authors"],
+                showReading: true,
+                showWant: "true",
+                showIndexing: false,
+                expandSections: true,
+                count: "7",
+                shelf: "Favorites",
+                username: "reader",
+                password: "secret",
+              },
+              { type: "inpxlibrary" },
+            ],
+          },
+        ],
+        groups: [],
+      },
+    ];
+
+    const [configured, plain] = cleanServiceGroups(rawGroups)[0].services[0].widgets;
+    expect(configured).toMatchObject({
+      fields: ["books", "authors"],
+      showReading: true,
+      showWant: true,
+      showIndexing: false,
+      expandSections: true,
+      count: 7,
+      shelf: "Favorites",
+    });
+    expect(configured).not.toHaveProperty("username");
+    expect(configured).not.toHaveProperty("password");
+    for (const key of ["showReading", "showWant", "showIndexing", "expandSections", "count", "shelf"]) {
+      expect(plain).not.toHaveProperty(key);
+    }
+  });
+
   it("cleanServiceGroups removes calendar integration urls from frontend widget payload", async () => {
     const mod = await import("./service-helpers");
     const { cleanServiceGroups } = mod;
