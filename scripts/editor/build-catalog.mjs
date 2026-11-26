@@ -161,10 +161,11 @@ function palettes(root) {
 
 export function buildCatalog(root) {
   const docs = path.join(root, "docs");
-  const { version } = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
   const catalog = {
     palettes: palettes(root),
-    homepageVersion: version,
+    // The catalog describes the upstream Homepage this fork is based on, not the fork's own version.
+    homepageVersion: pkg.upstreamVersion ?? pkg.version,
     generated: new Date().toISOString().slice(0, 10),
     serviceWidgets: widgetDocs(path.join(docs, "widgets", "services"), "service"),
     infoWidgets: widgetDocs(path.join(docs, "widgets", "info"), "info"),

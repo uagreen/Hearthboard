@@ -49,9 +49,10 @@ describe("buildCatalog on this repository's docs", () => {
     catalog = buildCatalog(ROOT);
   }, 60000);
 
-  it("takes the version from package.json", () => {
-    const { version } = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
-    expect(catalog.homepageVersion).toBe(version);
+  it("reports the upstream Homepage version from package.json, not the fork's own version", () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
+    expect(pkg.upstreamVersion).toBeTruthy();
+    expect(catalog.homepageVersion).toBe(pkg.upstreamVersion);
   });
 
   it("finds service widgets, each with a type and a fields array", () => {
