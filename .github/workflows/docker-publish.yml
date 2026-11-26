@@ -6,12 +6,9 @@ on:
   push:
     branches:
       - main
-      - feature/**
-      - fix/**
-      - dev
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "main" ]
   merge_group:
 
 env:
@@ -20,10 +17,34 @@ env:
 permissions: {}
 
 jobs:
+  # The nightly run is skipped when nothing was committed since the previous night.
+  changes:
+    name: Check for new commits
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - name: Any commits in the last 25 hours?
+        id: check
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          elif [ -n "$(git log --since='25 hours ago' --format=%H -1)" ]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No commits since yesterday, skipping the nightly build."
+            echo "build=false" >> "$GITHUB_OUTPUT"
+          fi
 
   build:
     name: Docker Build & Push
+    needs: changes
+    if: needs.changes.outputs.build == 'true'
     runs-on: ubuntu-22.04
     permissions:
       contents: read

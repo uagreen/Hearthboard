@@ -1,4 +1,6 @@
-name-template: 'v$RESOLVED_VERSION'
+# Hearthboard has its own numbering; the Homepage release it is based on goes in brackets.
+# Update the bracketed version when you merge a newer upstream release.
+name-template: 'v$RESOLVED_VERSION (Homepage 2.8.0)'
 tag-template: 'v$RESOLVED_VERSION'
 change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
 change-title-escapes: '\\<*_&'
