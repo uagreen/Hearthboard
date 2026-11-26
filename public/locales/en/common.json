@@ -157,6 +157,21 @@
         "no_items": "No items",
         "users_unavailable": "User list unavailable: the API key needs administrator rights"
     },
+    "inpxlibrary": {
+        "books": "Books",
+        "authors": "Authors",
+        "series": "Series",
+        "genres": "Genres",
+        "languages": "Languages",
+        "indexing": "Indexing",
+        "updated": "Updated",
+        "reading": "Reading",
+        "want": "Want to read",
+        "shelf": "Shelf",
+        "shelf_not_found": "Shelf not found",
+        "auth_failed": "Could not load the list: check the username and password",
+        "no_items": "No items"
+    },
     "esphome": {
         "offline": "Offline",
         "offline_alt": "Offline",

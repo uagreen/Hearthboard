@@ -65,6 +65,7 @@ const components = {
   homebridge: dynamic(() => import("./homebridge/component")),
   healthchecks: dynamic(() => import("./healthchecks/component")),
   immich: dynamic(() => import("./immich/component")),
+  inpxlibrary: dynamic(() => import("./inpxlibrary/component")),
   jackett: dynamic(() => import("./jackett/component")),
   jdownloader: dynamic(() => import("./jdownloader/component")),
   jellyfin: dynamic(() => import("./jellyfin/component")),
