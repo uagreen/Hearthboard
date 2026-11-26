@@ -4,11 +4,12 @@ import { useTranslation } from "next-i18next/pages";
 import { BsCpu, BsFillCpuFill, BsFillPlayFill, BsPauseFill, BsVolumeMuteFill } from "react-icons/bs";
 import { MdOutlineSmartDisplay } from "react-icons/md";
 
+import LibrarySections from "./library";
+
 import { getURLSearchParams } from "utils/proxy/api-helpers";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 import withWidgetFields from "utils/widget-fields";
 
-import LibrarySections from "./library";
 
 const DEFAULT_FIELDS = ["movies", "series", "episodes", "songs"];
 

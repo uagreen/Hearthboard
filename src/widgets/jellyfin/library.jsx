@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 import { useTranslation } from "next-i18next/pages";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { clampCount, formatRating, itemTitle, itemUrl, libraryUrl, pickUser, posterUrl } from "./library-utils";
 
@@ -100,14 +101,14 @@ export default function LibrarySections({ service }) {
   const continueCount = clampCount(widget.continueCount);
   const storageKey = `jellyfin-user:${widget.service_group}/${widget.service_name}`;
 
-  const [storedId, setStoredId] = useState();
-  useEffect(() => {
+  // Read on the client only; the user is not known before the user list has loaded, so no hydration mismatch.
+  const [storedId, setStoredId] = useState(() => {
     try {
-      setStoredId(localStorage.getItem(storageKey) ?? undefined);
+      return typeof localStorage === "undefined" ? undefined : (localStorage.getItem(storageKey) ?? undefined);
     } catch {
-      // storage unavailable (private mode): keep the default user
+      return undefined; // storage unavailable (private mode): keep the default user
     }
-  }, [storageKey]);
+  });
 
   const { data: usersData, error: usersError } = useWidgetAPI(
     widget,
