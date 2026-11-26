@@ -87,17 +87,17 @@
 - Consumes: Task 1 options on `service.widget`; Task 2 mappings via `useWidgetAPI(widget, "Users" | "Views" | "Latest" | "Resume", {userId, parentId?, limit, includeItemTypes?})` and every helper in `library-utils.js`; `service.href` for links and posters.
 - Produces: `export default function LibrarySections({ service })`. User choice stored in `localStorage` under `jellyfin-user:${widget.service_group}/${widget.service_name}` (value: user `Id`); invalid/absent → `pickUser`.
 
-- [ ] **Step 1: Write failing tests** in `library.test.jsx` (mock `useWidgetAPI` by endpoint name, stub `localStorage`; fixtures shaped like the OpenAPI schema: `Users` array, `Views`/`Resume` as `{Items: [...]}`, `Latest` as bare array):
+- [x] **Step 1: Write failing tests** in `library.test.jsx` (mock `useWidgetAPI` by endpoint name, stub `localStorage`; fixtures shaped like the OpenAPI schema: `Users` array, `Views`/`Resume` as `{Items: [...]}`, `Latest` as bare array):
   - all flags off → renders nothing.
   - `showLibraries` → one link per view with the correct `#/movies?…`/`#/tv?…` href.
   - `showContinueWatching` → a `<details>` titled "Continue watching" with one entry per episode: `<img>` `src` is the series poster, title/subtitle text, `★ 7.8`, link to `#/details?id=…&serverId=…`; closed unless `expandSections`.
   - `showLatest` → one `<details>` per library, each at most `latestCount` items; a library with `[]` shows "No items".
   - user switcher: `<select>` lists users, preselects `pickUser` result, changing it writes `localStorage` and re-queries with the new `userId`; `enableUserSwitch: false` hides it.
   - Review Focus 1–3: no `href` → no `<img>`/links but titles present; `Users` error → no select and no section queries (a `userId` is unknown), the `users_unavailable` hint is shown; missing rating → no star text.
-- [ ] **Step 2: Run** `pnpm vitest run src/widgets/jellyfin --testTimeout 120000 --hookTimeout 120000`. Expected: new tests FAIL (module missing), old ones pass.
-- [ ] **Step 3: Implement** `library.jsx` (native `<details>`/`<summary>`, Tailwind classes matching the surrounding widget, `loading="lazy"` posters with fixed aspect box, nothing rendered until a user id is known) and wire it into `component.jsx`; add locale strings.
-- [ ] **Step 4: Run** the same command. Expected: all PASS including untouched `component.test.jsx`; prettier + eslint on touched files (run eslint alone, in the background if it exceeds 120 s).
-- [ ] **Step 5: Commit** `feat(jellyfin): libraries, continue watching and recently added sections`
+- [x] **Step 2: Run** `pnpm vitest run src/widgets/jellyfin --testTimeout 120000 --hookTimeout 120000`. Expected: new tests FAIL (module missing), old ones pass.
+- [x] **Step 3: Implement** `library.jsx` (native `<details>`/`<summary>`, Tailwind classes matching the surrounding widget, `loading="lazy"` posters with fixed aspect box, nothing rendered until a user id is known) and wire it into `component.jsx`; add locale strings.
+- [x] **Step 4: Run** the same command. Expected: all PASS including untouched `component.test.jsx`; prettier + eslint on touched files (run eslint alone, in the background if it exceeds 120 s).
+- [x] **Step 5: Commit** `feat(jellyfin): libraries, continue watching and recently added sections`
 
 ### Task 4: Documentation, catalog, final checks
 

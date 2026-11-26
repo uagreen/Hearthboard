@@ -149,7 +149,13 @@
         "series": "Series",
         "episodes": "Episodes",
         "songs": "Songs",
-        "albums": "Albums"
+        "albums": "Albums",
+        "libraries": "Libraries",
+        "continue_watching": "Continue watching",
+        "recently_added": "Recently added",
+        "user": "User",
+        "no_items": "No items",
+        "users_unavailable": "User list unavailable: the API key needs administrator rights"
     },
     "esphome": {
         "offline": "Offline",

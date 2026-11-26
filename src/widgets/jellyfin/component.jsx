@@ -8,6 +8,8 @@ import { getURLSearchParams } from "utils/proxy/api-helpers";
 import useWidgetAPI from "utils/proxy/use-widget-api";
 import withWidgetFields from "utils/widget-fields";
 
+import LibrarySections from "./library";
+
 const DEFAULT_FIELDS = ["movies", "series", "episodes", "songs"];
 
 function ticksToTime(ticks) {
@@ -204,7 +206,7 @@ function CountBlocks({ service, countData }) {
   );
 }
 
-export default function Component({ service: configuredService }) {
+function NowPlayingAndBlocks({ service: configuredService }) {
   const { t } = useTranslation();
 
   const service = withWidgetFields(configuredService, DEFAULT_FIELDS);
@@ -349,4 +351,16 @@ export default function Component({ service: configuredService }) {
   if (enableBlocks) {
     return <CountBlocks service={service} countData={countData} />;
   }
+}
+
+export default function Component({ service }) {
+  const { widget } = service;
+  const hasLibrarySections = widget?.showLibraries || widget?.showContinueWatching || widget?.showLatest;
+
+  return (
+    <>
+      <NowPlayingAndBlocks service={service} />
+      {hasLibrarySections && <LibrarySections service={service} />}
+    </>
+  );
 }
