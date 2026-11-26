@@ -35,21 +35,24 @@
 ### Task 0: Форк і каркас
 
 **Files:**
+
 - Create: `NOTICE`, `docs/superpowers/specs/…`, `docs/superpowers/plans/…` (копії з поточної папки)
 - Modify: `README.md`, `Dockerfile:38-39` (LABEL license → `GPL-3.0`; source → URL форку)
 
 **Interfaces:**
+
 - Produces: працююче `pnpm install && pnpm test` на чистому форку; віддалені `origin` (форк) і `upstream` (gethomepage/homepage).
 
 - [x] **Step 1: Створити форк на GitHub** — це публічна дія від імені автора: попросити автора створити форк (`<FORK_NAME>` — його вибір) і дати URL; самостійно не створювати.
 - [x] **Step 2: Клонувати форк, додати `upstream`, створити гілку `editor-integration`**
-  Run: `git remote add upstream https://github.com/gethomepage/homepage && git fetch upstream && git remote -v`
-  Expected: `origin` і `upstream` у списку.
+      Run: `git remote add upstream https://github.com/gethomepage/homepage && git fetch upstream && git remote -v`
+      Expected: `origin` і `upstream` у списку.
 - [x] **Step 3: Базова перевірка** — `pnpm install --frozen-lockfile && pnpm test`. Expected: усі тести проходять (зафіксувати кількість як базову лінію).
 - [x] **Step 4: Додати `NOTICE`** (рядок про код редактора: «Portions © jchisholm59, MIT», з повним текстом MIT-ліцензії), абзац у README про форк, позначку про ШІ, посилання на апстрім; виправити LABEL у `Dockerfile`.
 - [x] **Step 5: Commit** — `chore: fork bootstrap, NOTICE and README disclosure`
 
 **Виконано 2026-11-25. Відхилення й факти:**
+
 - Форк: `uagreen/Hearthboard`, назва обрана автором. Робоча копія — `/mnt/e/projekts/Homepage_gui` (корінь репозиторію), а не окрема папка; `core.fileMode=false` (диск Windows ставить 755 усім файлам).
 - Базова лінія Step 3: **1934 проходять, 18 падають** (`theme`, `color`, `search`, `pages/index`), усі з `localStorage.* is not a function` — Node 25 у системі; на Node 24 не перевірялося. Нові тести порівнювати з цією лінією.
 - Доступ на запис: SSH-ключ `id_ed25519_hearthboard`, alias `github-hearthboard` у `~/.ssh/config` (працює лише з WSL, не з PhpStorm під Windows).
@@ -60,11 +63,13 @@
 ### Task 1: Ядро редактора (файли, YAML-злиття, бекапи)
 
 **Files:**
+
 - Create: `src/utils/editor/sync.js` (перенос `lib/sync.js` як є), `src/utils/editor/files.js`, `src/utils/editor/backups.js`
 - Test: `src/utils/editor/sync.test.js`, `src/utils/editor/files.test.js`, `src/utils/editor/backups.test.js`
 - Modify: `package.json` (залежності `yaml`, `diff`)
 
 **Interfaces:**
+
 - Produces (`files.js`, усі працюють над `CONF_DIR` з `utils/config/config`):
   - `configPath(name: string): string` — кидає `EditorError` (`status: 400`) для імен не за `/^[\w][\w.-]*\.(ya?ml|css|js)$/`.
   - `readFile(name): {name, text, mtime, exists}`; `listFiles(): {name, size}[]`
@@ -83,6 +88,7 @@
 - [x] **Step 7: Commit** — `feat(editor): core file, yaml-merge and backup utilities`
 
 **Виконано 2026-11-25 (коміт `a07c8365`). Відхилення й факти:**
+
 - Залежності: `yaml@2.9.1`, `diff@9.0.0`. Тести редактора: 32/32, eslint чистий, prettier застосовано (`pre-commit` локально не встановлений).
 - Каталог бекапів за замовчуванням — `<CONF_DIR>/.editor-backups` (змінюється через `EDITOR_BACKUP_DIR`); пережив би перестворення контейнера, бо лежить у томі config. Згадати в `docs/configs/editor.md` (Task 6).
 - `renderEdit` розбирає порожній файл як `""`, а не `"---\n"` (оригінал), щоб у нових файлах не з'являвся зайвий `---`.
@@ -93,10 +99,12 @@
 ### Task 2: Захист і API файлів (info, files, file, preview, save)
 
 **Files:**
+
 - Create: `src/utils/editor/guard.js`, `src/pages/api/editor/info.js`, `src/pages/api/editor/files.js`, `src/pages/api/editor/file/[name].js`, `src/pages/api/editor/preview/[name].js`, `src/pages/api/editor/save/[name].js`
 - Test: `src/utils/editor/guard.test.js`, `src/pages/api/editor/save/[name].test.js`
 
 **Interfaces:**
+
 - Consumes: Task 1 (`files.js`, `backups.js`); з Homepage — `withAuth`, `isAuthEnabled`, `invalidateDashboardData` (`utils/config/dashboard`).
 - Produces: `withEditor(handler): NextApiHandler` у `guard.js`:
   1. `HOMEPAGE_EDITOR !== "true"` → 404 `{error}`;
@@ -114,6 +122,7 @@
 - [x] **Step 6: Commit** — `feat(editor): guarded file API with diff, backup and conflict detection`
 
 **Виконано 2026-11-25. Відхилення й факти:**
+
 - Тест `save` лежить у `src/__tests__/pages/api/editor/save.test.js`, а не поруч із маршрутом: файл `*.test.js` у `src/pages/api` Next трактує як API-маршрут, а `auth-boundary.test.js` перебирає всі файли там. Те саме правило — для тестів Task 3.
 - Порядок у `withEditor`: перевірка хоста → якщо auth Homepage ввімкнено, 401 для анонімів → 404 при вимкненому редакторі → пароль/403. Причина: `auth-boundary.test.js` вимагає 401/400 для кожного маршруту. Наслідок: при ввімкненому auth анонім бачить 401, а не 404 (як на решті API).
 - Тестове середовище ставить `HOMEPAGE_ALLOWED_HOSTS="*"`; тест відхилення хоста його скидає. `utils/logger` у тестах замоканий (його ініціалізація копіює `settings.yaml` у каталог конфігу).
@@ -125,10 +134,12 @@
 ### Task 3: Бекапи, іконки, перевірка посилань, перезапуск
 
 **Files:**
+
 - Create: `src/pages/api/editor/backups.js`, `backup/[id]/[name].js`, `restore/[id]/[name].js`, `icons/index.js`, `icons/served.js`, `icons/fetch.js`, `icons/upload.js`, `icons/local/[name].js`, `check-links.js`, `restart.js`, `src/utils/editor/icons.js`
 - Test: `src/utils/editor/icons.test.js`, `src/pages/api/editor/check-links.test.js`
 
 **Interfaces:**
+
 - Consumes: Task 1–2.
 - Produces (`icons.js`): `safeIconName(n: string): string`, `storeIcon(name: string, buf: Buffer, type: string|undefined): string` (кидає 400 для не-зображень і >15 MB), `localIcons(): string[]`.
 - Маршрути — як в оригіналі: `GET backups`, `GET backup/:id/:name`, `POST restore/:id/:name`, `GET icons`, `GET icons/served`, `POST icons/fetch`, `POST icons/upload` (`bodyParser: false`, ліміт 15 MB), `GET icons/local/:name` (замість `/local-icons`), `POST check-links`, `POST restart` (404 без `DOCKER_PROXY`).
@@ -141,6 +152,7 @@
 - [x] **Step 5: Commit** — `feat(editor): backups, icons, link checker and optional restart`
 
 **Виконано 2026-11-25. Відхилення й факти:**
+
 - Тести маршрутів — у `src/__tests__/pages/api/editor/` (`icons-fetch`, `check-links`, `backups`), `icons.test.js` — поруч із `src/utils/editor/icons.js` (див. примітку до Task 2). Нові маршрути проходять `auth-boundary.test.js` (88/88).
 - Додатково до плану: `assertFetchableUrl` (http/https; DNS-резолв; відхиляє loopback, `0.0.0.0`, link-local, IPv4-mapped IPv6), `fetchRemoteImage` перевіряє кожен редирект заново (`302 → 127.0.0.1` блокується). Залишкове обмеження — DNS-відповідь може змінитися між перевіркою й запитом (описано в коментарі).
 - `restore` перевіряє id й ім'я через `readBackup` до запису (в оригіналі ім'я перевірялося пізніше). Іконки з `icons/local/` віддаються з `Content-Security-Policy: sandbox`, щоб SVG не виконував скрипти. `restart` без `DOCKER_PROXY` → 404 (оригінал давав 400).
@@ -152,10 +164,12 @@
 ### Task 4: Каталог з коду форку
 
 **Files:**
+
 - Create: `scripts/editor/build-catalog.mjs` (перенос `scripts/build-catalog.mjs`), `scripts/editor/catalog-examples.mjs`, `scripts/editor/catalog.test.js` (або `src/utils/editor/catalog.test.js`, якщо Vitest не підхоплює `scripts/` — додати в `include` мінімально)
 - Modify: `package.json` (скрипти `editor:catalog`, `prebuild`, `predev`), `.gitignore` (`public/editor/catalog.json`)
 
 **Interfaces:**
+
 - Produces: `public/editor/catalog.json` зі структурою оригіналу (`homepageVersion`, `palettes`, `serviceWidgets`, `infoWidgets`, `configs`) **з однією зміною**: кожен елемент `configs[page].sections[i].examples` тепер `{text: string, insertable: boolean, reason?: "placeholder"|"not-a-mapping"|"invalid-yaml"}`.
 - Produces: `classifyExample(text: string): {text, insertable, reason?}` у `catalog-examples.mjs` — `insertable` лише якщо YAML парситься у mapping (не список, не scalar); `...` як окремий рядок → `reason: "placeholder"`.
 - Скрипт читає `./docs` форку, версію бере з `package.json` (`version`), без клонування.
@@ -168,6 +182,7 @@
 - [x] **Step 6: Commit** — `feat(editor): generate widget/settings catalog from the fork's own docs`
 
 **Виконано 2026-11-25. Відхилення й факти:**
+
 - Тест — `src/utils/editor/catalog.test.js` (імпортує `scripts/editor/*.mjs`), `vitest.config.mjs` не змінювався. `build-catalog.mjs` експортує `buildCatalog(root)`; CLI пише `public/editor/catalog.json`.
 - Ручна звірка (Step 3): **164 service-віджети = 164 документи** у `docs/widgets/services` (без `index.md`), **13 info = 13**; пропущених, дублікатів типів і документів із кількома типами немає. Звірку закріплено тестом. Прикладів у `configs`: 65 вставних із 97.
 - `package.json`: `editor:catalog`, `predev`, `prebuild` (vendor-скрипт додасть Task 5). `.gitignore`: `public/editor/catalog.json`.
@@ -179,10 +194,12 @@
 ### Task 5: Фронтенд, `/editor`, виправлення Settings
 
 **Files:**
+
 - Create: `public/editor/` (перенос `public/*.js`, `index.html`, `style.css` з оригіналу), `public/editor/catalog-utils.js`, `src/utils/editor/catalog-utils.test.js`, `scripts/editor/copy-vendor.mjs`, `tests/e2e/editor.spec.js`, `playwright.config.js`
 - Modify: `public/editor/*.js` (URL `/api/…` → `/api/editor/…`; `/local-icons/` → `/api/editor/icons/local/`; `/vendor/…` лишається, файли кладе скрипт у `public/editor/vendor/`), `public/editor/views.js` (Settings), `next.config.js` (rewrite `/editor` → `/editor/index.html`), `.gitignore` (`public/editor/vendor`), `Dockerfile:45` (копіювати `public` з builder: `COPY --link --from=builder --chown=1000:1000 /app/public ./public/`, бо генеровані файли не лежать у контексті)
 
 **Interfaces:**
+
 - Produces: `sectionsWithPage(configs: Record<string,{sections: Section[]}>): (Section & {page: string, pageLabel: string})[]` у `catalog-utils.js` (чиста функція без DOM; експортується як ES-модуль, що імпортується і з Vitest).
 - `views.js` будує і `toc`, і `all` з результату `sectionsWithPage` — **кожен елемент меню має `page` за побудовою**, `select(s)` більше не бере секцію без `page`.
 - Кнопка «Use this» показується лише для `example.insertable`; для інших — підказка з `reason` («прикладі є шаблон, скопіюйте вручну» / «це список, вставляється через вкладку Services»).
@@ -197,6 +214,7 @@
 - [x] **Step 7: Commit** — `feat(editor): mount UI at /editor, fix Settings navigation crash`
 
 **Виконано 2026-11-25. Відхилення й факти:**
+
 - Статика редактора обслуговується за `/editor/…` (а не `/vendor/…`): імпорти в UI — `/editor/vendor/{sortable,marked,yaml}/…`; `index.html` підключає `/editor/style.css` і `/editor/app.js` абсолютними шляхами, бо сторінка віддається з `/editor` через rewrite. `catalog.json` читається як `/editor/catalog.json`, `restart-homepage` → `/api/editor/restart`, `icons/index` → `/api/editor/icons`.
 - `next.config.js`: rewrite `/editor → /editor/index.html` **без** `locale: false` — з `locale: false` при i18n Next віддавав 404 (виявлено вручною перевіркою; статика при цьому була доступна).
 - Vendor-скрипт копіює ще й `docs/assets` → `vendor/docs-assets` (4.7 МБ): документація вбудовує картинки як `../../assets/*.webp`, без цього розділи Card Style/Block Style/Font/Widget давали 404. `markdown()` переписує ці шляхи.
@@ -213,10 +231,12 @@
 ### Task 6: Документація, CI, образ
 
 **Files:**
+
 - Create: `docs/configs/editor.md` (як увімкнути, змінні `HOMEPAGE_EDITOR`, `EDITOR_PASSWORD`, `EDITOR_ALLOW_NO_AUTH`, `EDITOR_BACKUP_DIR`, `DOCKER_PROXY`; застереження про безпеку), `.github/workflows/e2e.yml`
 - Modify: `README.md`, `mkdocs.yml` (сторінка editor), `.github/workflows/docker-publish.yml` (ім'я образу → ghcr форку), видалити/вимкнути workflow, що прив'язані до апстріму й секретів (`issue-triage`, `pr-triage`, `pr-quality`, `reaction-comments`, `repo-maintenance`, `crowdin`, `docs-publish`) — перелік звірити з тим, що справді вимагає секретів апстріму
 
 **Interfaces:**
+
 - Consumes: усі попередні задачі.
 
 - [x] **Step 1:** Написати `docs/configs/editor.md` і розділ у README (скріншоти — після ручної перевірки Task 5).
@@ -226,6 +246,7 @@
 - [x] **Step 5: Commit** — `docs/ci: editor docs, e2e workflow, fork image publishing`
 
 **Виконано 2026-11-26. Відхилення й факти:**
+
 - **Кроки 3–4 (локальний `docker build`, запуск, `GET /api/editor/info` → 404 в образі) НЕ виконано: у середовищі немає `docker`.** Залишаються відкритими; виконати вручну або на CI. Поведінку без `HOMEPAGE_EDITOR` (404) покрито лише юніт-тестами `guard.test.js`.
 - Скріншотів у README немає (ручну перевірку Task 5 виконав headless-скрипт).
 - Видалено workflow, прив'язані до апстріму: `issue-triage`, `pr-triage`, `pr-quality`, `reaction-comments`, `repo-maintenance` (тексти й політика gethomepage), `crowdin` (секрети Crowdin), `docs-publish` (публікація на gethomepage.dev, guard на `gethomepage/homepage`). `release-drafter` і `lint` залишено.

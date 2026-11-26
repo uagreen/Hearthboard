@@ -363,12 +363,10 @@ function drawMock(el, s) {
         : h("span", { class: "m-ms", style: `color:${sub}` }, "42 ms");
 
   const services = store.files["services.yaml"].model ?? [];
-  const groups = services
-    .slice(0, 2)
-    .map((g) => ({
-      name: firstKey(g),
-      items: (g[firstKey(g)] ?? []).filter((e) => !Array.isArray(e[firstKey(e)])).slice(0, 4),
-    }));
+  const groups = services.slice(0, 2).map((g) => ({
+    name: firstKey(g),
+    items: (g[firstKey(g)] ?? []).filter((e) => !Array.isArray(e[firstKey(e)])).slice(0, 4),
+  }));
   const card = (e) => {
     const name = firstKey(e);
     const p = e[name] ?? {};
