@@ -44,11 +44,11 @@
 - Produces mappings: `IndexStatus: {endpoint: "api/index-status"}`, `Reading: {endpoint: "api/library/continue", params: ["pageSize"]}`, `Want: {endpoint: "api/library/want", params: ["pageSize"]}`, `Shelves: {endpoint: "api/shelves"}`, `ShelfBooks: {endpoint: "api/shelves/{shelfId}/books", segments: ["shelfId"]}`; `proxyHandler: credentialedProxyHandler`.
 - `credentialed.js`: for `widget.type === "inpxlibrary"` sets `Authorization: Basic base64(username:password)` only when both are set; otherwise sets no auth header and no `X-API-Key`.
 
-- [ ] **Step 1: Write failing tests.** `widget.test.js`: `expectWidgetConfigShape(widget)` and the five mappings above exactly. `credentialed.test.js`: following the existing per-type tests there, `inpxlibrary` with `username`/`password` sends the Basic header; without them sends no `Authorization` and no `X-API-Key` header.
-- [ ] **Step 2: Run** `pnpm vitest run src/widgets/inpxlibrary src/utils/proxy/handlers/credentialed.test.js --testTimeout 120000 --hookTimeout 120000`. Expected: new tests FAIL (module missing / header absent).
-- [ ] **Step 3: Implement** `widget.js`, register it in `widgets.js`, add the branch to `credentialed.js` (before the final `else`).
-- [ ] **Step 4: Run** the same command. Expected: PASS (the whole `credentialed.test.js` stays green); prettier on touched files.
-- [ ] **Step 5: Commit** `feat(inpxlibrary): widget definition and Basic auth in the credentialed proxy`
+- [x] **Step 1: Write failing tests.** `widget.test.js`: `expectWidgetConfigShape(widget)` and the five mappings above exactly. `credentialed.test.js`: following the existing per-type tests there, `inpxlibrary` with `username`/`password` sends the Basic header; without them sends no `Authorization` and no `X-API-Key` header.
+- [x] **Step 2: Run** `pnpm vitest run src/widgets/inpxlibrary src/utils/proxy/handlers/credentialed.test.js --testTimeout 120000 --hookTimeout 120000`. Expected: new tests FAIL (module missing / header absent).
+- [x] **Step 3: Implement** `widget.js`, register it in `widgets.js`, add the branch to `credentialed.js` (before the final `else`).
+- [x] **Step 4: Run** the same command. Expected: PASS (the whole `credentialed.test.js` stays green); prettier on touched files.
+- [x] **Step 5: Commit** `feat(inpxlibrary): widget definition and Basic auth in the credentialed proxy`
 
 ### Task 2: Pass the options to the client, keep credentials out
 

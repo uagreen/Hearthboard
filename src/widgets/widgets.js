@@ -56,6 +56,7 @@ import homeassistant from "./homeassistant/widget";
 import homebox from "./homebox/widget";
 import homebridge from "./homebridge/widget";
 import immich from "./immich/widget";
+import inpxlibrary from "./inpxlibrary/widget";
 import jackett from "./jackett/widget";
 import jdownloader from "./jdownloader/widget";
 import jellyfin from "./jellyfin/widget";
@@ -223,6 +224,7 @@ const widgets = {
   healthchecks,
   ical: calendar,
   immich,
+  inpxlibrary,
   jackett,
   jdownloader,
   jellyfin,

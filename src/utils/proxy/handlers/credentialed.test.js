@@ -35,6 +35,7 @@ vi.mock("widgets/widgets", () => ({
     proxmox: { api: "{url}/api2/json/{endpoint}" },
     truenas: { api: "{url}/api/v2.0/{endpoint}" },
     ntfy: { api: "{url}/{endpoint}" },
+    inpxlibrary: { api: "{url}/{endpoint}" },
     whatsupdocker: { api: "{url}/{endpoint}" },
     proxmoxbackupserver: { api: "{url}/api2/json/{endpoint}" },
     checkmk: { api: "{url}/{endpoint}" },
@@ -277,6 +278,29 @@ describe("utils/proxy/handlers/credentialed", () => {
 
     const [, params] = httpProxy.mock.calls.at(-1);
     expect(params.headers.Authorization).toBeUndefined();
+  });
+
+  it("uses Basic auth for inpxlibrary when username/password are provided", async () => {
+    getServiceWidget.mockResolvedValue({ type: "inpxlibrary", url: "http://lib", username: "reader", password: "pw" });
+    httpProxy.mockResolvedValue([200, "application/json", { ok: true }]);
+
+    const req = { method: "GET", query: { group: "g", service: "s", endpoint: "api/shelves", index: 0 } };
+    await credentialedProxyHandler(req, createMockRes());
+
+    const [, params] = httpProxy.mock.calls.at(-1);
+    expect(params.headers.Authorization).toBe(`Basic ${Buffer.from("reader:pw").toString("base64")}`);
+  });
+
+  it("sends neither Authorization nor X-API-Key for inpxlibrary without credentials", async () => {
+    getServiceWidget.mockResolvedValue({ type: "inpxlibrary", url: "http://lib" });
+    httpProxy.mockResolvedValue([200, "application/json", { ok: true }]);
+
+    const req = { method: "GET", query: { group: "g", service: "s", endpoint: "api/index-status", index: 0 } };
+    await credentialedProxyHandler(req, createMockRes());
+
+    const [, params] = httpProxy.mock.calls.at(-1);
+    expect(params.headers.Authorization).toBeUndefined();
+    expect(params.headers["X-API-Key"]).toBeUndefined();
   });
 
   it.each([

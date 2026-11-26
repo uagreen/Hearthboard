@@ -84,6 +84,11 @@ export default async function credentialedProxyHandler(req, res, map) {
         } else if (widget.username && widget.password) {
           headers.Authorization = basicAuthHeader(widget);
         }
+      } else if (widget.type === "inpxlibrary") {
+        // The status endpoint is public; the per-user endpoints need the library user's own login.
+        if (widget.username && widget.password) {
+          headers.Authorization = basicAuthHeader(widget);
+        }
       } else if (widget.type === "proxmox") {
         headers.Authorization = `PVEAPIToken=${widget.username}=${widget.password}`;
       } else if (widget.type === "proxmoxbackupserver") {
