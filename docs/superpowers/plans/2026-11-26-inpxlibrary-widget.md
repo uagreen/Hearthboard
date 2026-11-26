@@ -82,11 +82,11 @@
 - `statValue(stats: object | null | undefined, field: "books"|"authors"|"series"|"genres"|"languages"): number | undefined` — maps to `totalBooks` … `totalLanguages`; `undefined` when missing or not a finite number.
 - `authorsText(book): string` — `book.authors` trimmed, `""` when absent.
 
-- [ ] **Step 1: Write failing table tests** for each function, including Review Focus 3-5 (`clampCount(0|99|"x")`, `baseUrl("#")`, `findShelf(undefined, "a")`, `findShelf([{id:1,name:" Fav "}], "fav")`, `indexingLine({active:true})` → `done 0, total 0`, `statValue(null, "books")` → `undefined`).
-- [ ] **Step 2: Run** `pnpm vitest run src/widgets/inpxlibrary/library-utils.test.js --testTimeout 120000 --hookTimeout 120000`. Expected: FAIL (module missing).
-- [ ] **Step 3: Implement** `library-utils.js`.
-- [ ] **Step 4: Run** the same command. Expected: PASS; prettier.
-- [ ] **Step 5: Commit** `feat(inpxlibrary): URL, shelf and status helpers`
+- [x] **Step 1: Write failing table tests** for each function, including Review Focus 3-5 (`clampCount(0|99|"x")`, `baseUrl("#")`, `findShelf(undefined, "a")`, `findShelf([{id:1,name:" Fav "}], "fav")`, `indexingLine({active:true})` → `done 0, total 0`, `statValue(null, "books")` → `undefined`).
+- [x] **Step 2: Run** `pnpm vitest run src/widgets/inpxlibrary/library-utils.test.js --testTimeout 120000 --hookTimeout 120000`. Expected: FAIL (module missing).
+- [x] **Step 3: Implement** `library-utils.js`.
+- [x] **Step 4: Run** the same command. Expected: PASS; prettier.
+- [x] **Step 5: Commit** `feat(inpxlibrary): URL, shelf and status helpers`
 
 ### Task 4: Component, registration, strings
 
