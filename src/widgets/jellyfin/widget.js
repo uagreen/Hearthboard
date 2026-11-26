@@ -37,6 +37,22 @@ const widget = {
       endpoint: "Sessions/{sessionId}/Playing/Pause",
       segments: ["sessionId"],
     },
+    // Library sections (same routes for version 1 and 2; Jellyfin >= 10.9, see docs)
+    Users: {
+      endpoint: "Users",
+    },
+    Views: {
+      endpoint: "UserViews",
+      params: ["userId"],
+    },
+    Latest: {
+      endpoint: "Items/Latest",
+      params: ["userId", "parentId", "limit"],
+    },
+    Resume: {
+      endpoint: "UserItems/Resume",
+      params: ["userId", "limit", "includeItemTypes"],
+    },
   },
 };
 

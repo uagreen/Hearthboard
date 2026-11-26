@@ -68,11 +68,11 @@
   - `itemTitle(item): {title: string, subtitle: string | null}` — episode: title = `SeriesName`, subtitle = `S01E02 · Name` (numbers padded); otherwise title = `Name`, subtitle = `ProductionYear` as string or null.
   - `pickUser(users: {Id, Name}[], storedId?: string, configuredName?: string): {Id, Name} | undefined` — stored id if present in `users`, else configured name (case-insensitive), else first.
 
-- [ ] **Step 1: Write failing tests.** `widget.test.js`: the four mappings exist with the exact endpoints/params above and none starts with `emby/`. `library-utils.test.js`: table tests for every function including Review Focus 1, 2, 4, 5 (`webBase("https://x/jf/")` → `"https://x/jf/web"`, `webBase("#")` → `null`, `clampCount(0)`/`("abc")`/`99`, `formatRating({CommunityRating: 0})` → `null`, episode without `SeriesId` → `posterUrl` null, `pickUser` with a stale stored id). `contract.test.js`: every endpoint used by `widget.js` v2/new mappings (strip query) is in a literal list `VERIFIED_12_4_PATHS` copied from the spec's verified facts (`Sessions`, `Items/Counts`, `Sessions/{sessionId}/Playing/{command}`, `Users`, `UserViews`, `Items/Latest`, `UserItems/Resume`), with a comment naming the OpenAPI version and date.
-- [ ] **Step 2: Run** `pnpm vitest run src/widgets/jellyfin --testTimeout 120000 --hookTimeout 120000`. Expected: new tests FAIL (missing mappings/module), existing jellyfin tests pass.
-- [ ] **Step 3: Implement** the mappings and `library-utils.js` (URL building with `new URL`; library type → route table from Global Constraints).
-- [ ] **Step 4: Run** the same command. Expected: all PASS; prettier + eslint on the touched files.
-- [ ] **Step 5: Commit** `feat(jellyfin): library, latest and resume endpoints plus URL/poster helpers`
+- [x] **Step 1: Write failing tests.** `widget.test.js`: the four mappings exist with the exact endpoints/params above and none starts with `emby/`. `library-utils.test.js`: table tests for every function including Review Focus 1, 2, 4, 5 (`webBase("https://x/jf/")` → `"https://x/jf/web"`, `webBase("#")` → `null`, `clampCount(0)`/`("abc")`/`99`, `formatRating({CommunityRating: 0})` → `null`, episode without `SeriesId` → `posterUrl` null, `pickUser` with a stale stored id). `contract.test.js`: every endpoint used by `widget.js` v2/new mappings (strip query) is in a literal list `VERIFIED_12_4_PATHS` copied from the spec's verified facts (`Sessions`, `Items/Counts`, `Sessions/{sessionId}/Playing/{command}`, `Users`, `UserViews`, `Items/Latest`, `UserItems/Resume`), with a comment naming the OpenAPI version and date.
+- [x] **Step 2: Run** `pnpm vitest run src/widgets/jellyfin --testTimeout 120000 --hookTimeout 120000`. Expected: new tests FAIL (missing mappings/module), existing jellyfin tests pass.
+- [x] **Step 3: Implement** the mappings and `library-utils.js` (URL building with `new URL`; library type → route table from Global Constraints).
+- [x] **Step 4: Run** the same command. Expected: all PASS; prettier + eslint on the touched files.
+- [x] **Step 5: Commit** `feat(jellyfin): library, latest and resume endpoints plus URL/poster helpers`
 
 ### Task 3: `LibrarySections` component
 
