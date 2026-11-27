@@ -39,11 +39,11 @@
 
 - Produces: `ProgressRow({ title: string, percent: number, details: string, error?: boolean, errorText?: string })`: header (truncated `title` with `title` attribute, `{percent}%`), `role="progressbar"` with `aria-valuemin=0`, `aria-valuemax=100`, `aria-valuenow={percent}` and a fill (`bg-red-500` when `error`, else `bg-emerald-500`, `style.width = percent%`), a `details` line, and `errorText` in red when `error` and present. Markup copied from Transmission's current `DownloadRow`.
 
-- [ ] **Step 1: Write failing tests** for `ProgressRow`: renders title, percent and details; `role=progressbar` `aria-valuenow`; error shows `errorText` and a red fill class; missing `title` does not crash.
-- [ ] **Step 2: Run** `pnpm vitest run --pool vmThreads src/components/services/widget/progress-row.test.jsx`. Expected: FAIL (module missing).
-- [ ] **Step 3: Implement** `progress-row.jsx`; make Transmission's `DownloadRow` a thin mapper to it (title ← name, percent ← `percentOf`, details ← the joined speed/eta/size string, error ← `error > 0`, errorText ← `errorString`).
-- [ ] **Step 4: Run** the new test and `pnpm vitest run --pool vmThreads src/widgets/transmission/component.test.jsx`. Expected: PASS (Transmission's 11 tests unchanged).
-- [ ] **Step 5: Commit** `refactor: shared ProgressRow component, Transmission uses it`.
+- [x] **Step 1: Write failing tests** for `ProgressRow`: renders title, percent and details; `role=progressbar` `aria-valuenow`; error shows `errorText` and a red fill class; missing `title` does not crash.
+- [x] **Step 2: Run** `pnpm vitest run --pool vmThreads src/components/services/widget/progress-row.test.jsx`. Expected: FAIL (module missing).
+- [x] **Step 3: Implement** `progress-row.jsx`; make Transmission's `DownloadRow` a thin mapper to it (title ← name, percent ← `percentOf`, details ← the joined speed/eta/size string, error ← `error > 0`, errorText ← `errorString`).
+- [x] **Step 4: Run** the new test and `pnpm vitest run --pool vmThreads src/widgets/transmission/component.test.jsx`. Expected: PASS (Transmission's 11 tests unchanged).
+- [x] **Step 5: Commit** `refactor: shared ProgressRow component, Transmission uses it`.
 
 ### Task 2: Download Station helpers
 
@@ -59,11 +59,11 @@
   - `taskPercent(task) -> number`: `additional.transfer.size_downloaded / size * 100` clamped 0-100, one decimal; 0 when size missing or 0.
   - `taskRows(tasks: object[], count) -> object[]`: tasks with `status` `downloading` or `error`; errors first, then `additional.transfer.speed_download` descending; sliced to `clampCount(count)`.
 
-- [ ] **Step 1: Write failing tests** for the three functions with the cases from Review Focus.
-- [ ] **Step 2: Run** `pnpm vitest run src/widgets/downloadstation/downloadstation-utils.test.js`. Expected: FAIL.
-- [ ] **Step 3: Implement** the helpers.
-- [ ] **Step 4: Run** again. Expected: PASS.
-- [ ] **Step 5: Commit** `feat(downloadstation): helpers for task rows and progress`.
+- [x] **Step 1: Write failing tests** for the three functions with the cases from Review Focus.
+- [x] **Step 2: Run** `pnpm vitest run src/widgets/downloadstation/downloadstation-utils.test.js`. Expected: FAIL.
+- [x] **Step 3: Implement** the helpers.
+- [x] **Step 4: Run** again. Expected: PASS.
+- [x] **Step 5: Commit** `feat(downloadstation): helpers for task rows and progress`.
 
 ### Task 3: Component, options, strings
 
@@ -76,11 +76,11 @@
 - Consumes: Tasks 1-2.
 - Produces: options `showDownloads`, `downloadsCount`, `expandSections` for `type === "downloadstation"` (booleans `!!JSON.parse(...)`, count `Number(JSON.parse(...))`; add `downloadsCount` and `showDownloads` to the destructured names; `expandSections` already exists). Locale keys `downloadstation.downloads` "Downloads", `downloadstation.no_downloads` "Nothing is downloading", `downloadstation.error` "Error".
 
-- [ ] **Step 1: Write failing tests:** no accordion without `showDownloads`; a progress bar per downloading task with title and speed; an errored task listed first with the error text key; limit by `downloadsCount`; hint when nothing is downloading; task without title tolerated; `expandSections` opens the `<details>`; service-helpers passes the options and not `username`/`password`.
-- [ ] **Step 2: Run** component test with `--pool vmThreads`, service-helpers test with the default pool. Expected: new tests FAIL.
-- [ ] **Step 3: Implement** (accordion styled like `src/widgets/transmission/component.jsx`; details line: speed via `common.byterate`, status; error rows use `downloadstation.error` as `errorText`); add the service-helpers block after the transmission block; add locale keys.
-- [ ] **Step 4: Run** the same commands. Expected: PASS.
-- [ ] **Step 5: Commit** `feat(downloadstation): downloads accordion with progress bars`.
+- [x] **Step 1: Write failing tests:** no accordion without `showDownloads`; a progress bar per downloading task with title and speed; an errored task listed first with the error text key; limit by `downloadsCount`; hint when nothing is downloading; task without title tolerated; `expandSections` opens the `<details>`; service-helpers passes the options and not `username`/`password`.
+- [x] **Step 2: Run** component test with `--pool vmThreads`, service-helpers test with the default pool. Expected: new tests FAIL.
+- [x] **Step 3: Implement** (accordion styled like `src/widgets/transmission/component.jsx`; details line: speed via `common.byterate`, status; error rows use `downloadstation.error` as `errorText`); add the service-helpers block after the transmission block; add locale keys.
+- [x] **Step 4: Run** the same commands. Expected: PASS.
+- [x] **Step 5: Commit** `feat(downloadstation): downloads accordion with progress bars`.
 
 ### Task 4: Docs and checks
 
@@ -88,6 +88,6 @@
 
 - Modify: `docs/widgets/services/downloadstation.md`
 
-- [ ] **Step 1: Docs:** options with defaults, an example, a note that task `title`/`status` handling follows the Download Station API and was not tested against a live NAS.
-- [ ] **Step 2: Run** eslint (background, no limit) on changed files and prettier 3.3.3 `--check`. Expected: exit 0, no diffs.
-- [ ] **Step 3: Tick** this plan, format it with prettier 3.3.3, commit `docs(downloadstation): downloads accordion`.
+- [x] **Step 1: Docs:** options with defaults, an example, a note that task `title`/`status` handling follows the Download Station API and was not tested against a live NAS.
+- [x] **Step 2: Run** eslint (background, no limit) on changed files and prettier 3.3.3 `--check`. Expected: exit 0, no diffs.
+- [x] **Step 3: Tick** this plan, format it with prettier 3.3.3, commit `docs(downloadstation): downloads accordion`.
