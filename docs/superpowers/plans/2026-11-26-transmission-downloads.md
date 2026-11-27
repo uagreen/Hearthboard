@@ -32,10 +32,12 @@
 ### Task 1: Proxy requests extra fields only when asked
 
 **Files:**
+
 - Modify: `src/widgets/transmission/proxy.js`
 - Test: `src/widgets/transmission/proxy.test.js`
 
 **Interfaces:**
+
 - Produces: `torrent-get` body `fields` = base four, plus `["id","name","eta","totalSize","error","errorString"]` when `widget.showDownloads` is `true` or `"true"`.
 
 - [x] **Step 1: Write failing tests** `requests extra torrent fields when showDownloads is true`, `... when showDownloads is the string "true"`, `keeps the original four fields when showDownloads is absent` (assert on `JSON.parse(httpProxy.mock.calls[0][1].body).arguments.fields`).
@@ -47,10 +49,13 @@
 ### Task 2: Helpers (counts, rows, ETA)
 
 **Files:**
+
 - Create: `src/widgets/transmission/transmission-utils.js`, `src/widgets/transmission/transmission-utils.test.js`
 
 **Interfaces:**
+
 - Produces:
+
   - `countStates(torrents: object[]) -> {queued: number, paused: number, errored: number}` (queued = status 3 or 5; paused = status 0; errored = `error > 0`).
   - `downloadRows(torrents: object[], count: number) -> object[]`: includes `status === 4` and incomplete (`percentDone < 1`) with `error > 0`; errored first, then `rateDownload` descending; sliced to `clampCount(count)`.
   - `clampCount(value) -> number`: integer 1-20, default 5 for non-numbers.
@@ -66,9 +71,11 @@
 ### Task 3: Component, options, locales
 
 **Files:**
+
 - Modify: `src/widgets/transmission/component.jsx`, `src/widgets/transmission/component.test.jsx`, `src/utils/config/service-helpers.js` (+ its test), `public/locales/en/common.json`
 
 **Interfaces:**
+
 - Consumes: Task 2 helpers; the proxy fields from Task 1.
 - Produces: widget options `showDownloads`, `downloadsCount`, `expandSections` passed to the client for `type === "transmission"` (booleans via `!!JSON.parse(...)`, count via `Number(JSON.parse(...))`; `expandSections` already exists in the destructuring, so only add the `transmission` block and the new names `showDownloads`, `downloadsCount`). Blocks `transmission.queued|paused|errored`.
 
@@ -81,6 +88,7 @@
 ### Task 4: Docs, lint, format
 
 **Files:**
+
 - Modify: `docs/widgets/services/transmission.md`
 
 - [x] **Step 1: Docs:** allowed fields (seven), the three options with defaults, an example config, a note that data comes from one `torrent-get` request, a note that ETA/progress is as Transmission reports.
