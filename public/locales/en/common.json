@@ -977,7 +977,15 @@
         "up": "Up",
         "down": "Down",
         "bytesTx": "Transmitted",
-        "bytesRx": "Received"
+        "bytesRx": "Received",
+        "clients": "Clients",
+        "update": "Firmware",
+        "rxRate": "Download",
+        "txRate": "Upload",
+        "up_to_date": "Up to date",
+        "update_patch": "Update: {{version}}",
+        "update_series": "New series {{version}}",
+        "update_unknown": "Unknown"
     },
     "uptimerobot": {
         "status": "Status",
