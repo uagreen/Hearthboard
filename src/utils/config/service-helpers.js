@@ -365,7 +365,7 @@ export function cleanServiceGroups(groups) {
           count,
           shelf,
 
-          // transmission (expandSections is shared)
+          // transmission, downloadstation (expandSections is shared)
           showDownloads,
           downloadsCount,
 
@@ -628,7 +628,7 @@ export function cleanServiceGroups(groups) {
           if (count !== undefined) widget.count = Number(JSON.parse(count));
           if (shelf) widget.shelf = shelf;
         }
-        if (type === "transmission") {
+        if (["transmission", "downloadstation"].includes(type)) {
           // username and password stay on the server
           if (showDownloads !== undefined) widget.showDownloads = !!JSON.parse(showDownloads);
           if (expandSections !== undefined) widget.expandSections = !!JSON.parse(expandSections);

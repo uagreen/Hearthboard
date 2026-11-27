@@ -323,7 +323,10 @@
         "download": "Download",
         "upload": "Upload",
         "leech": "Leech",
-        "seed": "Seed"
+        "seed": "Seed",
+        "downloads": "Downloads",
+        "no_downloads": "Nothing is downloading",
+        "error": "Error"
     },
     "sonarr": {
         "wanted": "Wanted",
