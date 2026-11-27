@@ -21,6 +21,21 @@ const widget = {
       apiMethod: "get",
       endpoint: "utilization",
     },
+    storage_info: {
+      apiName: "SYNO.Storage.CGI.Storage",
+      apiMethod: "load_info",
+      endpoint: "storage_info",
+    },
+    upgrade: {
+      apiName: "SYNO.Core.Upgrade.Server",
+      apiMethod: "check",
+      endpoint: "upgrade",
+    },
+    connections: {
+      apiName: "SYNO.Core.CurrentConnection",
+      apiMethod: "get",
+      endpoint: "connections",
+    },
   },
 };
 
