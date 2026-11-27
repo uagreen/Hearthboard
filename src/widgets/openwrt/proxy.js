@@ -1,11 +1,11 @@
+import { computeRate, updateStatus, wantsField } from "./openwrt-utils";
+
 import getServiceWidget from "utils/config/service-helpers";
 import createLogger from "utils/logger";
 import { formatApiCall } from "utils/proxy/api-helpers";
 import { sendJsonRpcRequest } from "utils/proxy/handlers/jsonrpc";
 import { httpProxy } from "utils/proxy/http";
 import widgets from "widgets/widgets";
-
-import { computeRate, updateStatus, wantsField } from "./openwrt-utils";
 
 const PROXY_NAME = "OpenWRTProxyHandler";
 const logger = createLogger(PROXY_NAME);
