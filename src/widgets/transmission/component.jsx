@@ -1,5 +1,6 @@
 import Block from "components/services/widget/block";
 import Container from "components/services/widget/container";
+import ProgressRow from "components/services/widget/progress-row";
 import { useTranslation } from "next-i18next/pages";
 
 import { clampCount, countStates, downloadRows, formatEta, percentOf } from "./transmission-utils";
@@ -12,35 +13,18 @@ const ROW = "text-theme-700 dark:text-theme-200 text-xs rounded-md bg-theme-200/
 
 function DownloadRow({ torrent }) {
   const { t } = useTranslation();
-  const failed = Number(torrent.error) > 0;
-  const percent = percentOf(torrent);
   const eta = formatEta(torrent.eta);
   const size = Number(torrent.totalSize) > 0 ? t("common.bytes", { value: torrent.totalSize }) : "";
   const details = [t("common.byterate", { value: torrent.rateDownload ?? 0 }), eta, size].filter(Boolean).join(" · ");
 
   return (
-    <div className="px-2 py-1">
-      <div className="flex justify-between gap-2 leading-tight">
-        <span className="whitespace-nowrap overflow-hidden text-ellipsis font-medium" title={torrent.name}>
-          {torrent.name ?? ""}
-        </span>
-        <span className="shrink-0">{percent}%</span>
-      </div>
-      <div
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={100}
-        aria-valuenow={percent}
-        className="h-1.5 mt-1 rounded-full bg-theme-300/40 dark:bg-theme-900/40 overflow-hidden"
-      >
-        <div
-          className={`h-full rounded-full ${failed ? "bg-red-500" : "bg-emerald-500"}`}
-          style={{ width: `${percent}%` }}
-        />
-      </div>
-      <div className="mt-0.5 opacity-70">{details}</div>
-      {failed && torrent.errorString && <div className="text-red-500">{torrent.errorString}</div>}
-    </div>
+    <ProgressRow
+      title={torrent.name}
+      percent={percentOf(torrent)}
+      details={details}
+      error={Number(torrent.error) > 0}
+      errorText={torrent.errorString}
+    />
   );
 }
 
