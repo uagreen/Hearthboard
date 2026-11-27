@@ -810,7 +810,23 @@
     "diskstation": {
         "days": "Days",
         "uptime": "Uptime",
-        "volumeAvailable": "Available"
+        "volumeAvailable": "Available",
+        "temperature": "Temperature",
+        "firmware": "DSM",
+        "update": "Update",
+        "diskHealth": "Disks",
+        "networkDown": "Download",
+        "networkUp": "Upload",
+        "users": "Users",
+        "volumes": "Volumes",
+        "disks": "Disks",
+        "health_ok": "OK",
+        "health_issues": "{{count}} issues",
+        "up_to_date": "Up to date",
+        "update_available": "Update: {{version}}",
+        "update_unknown": "Unknown",
+        "no_volumes": "No volumes",
+        "no_disks": "No disks"
     },
     "dispatcharr": {
         "channels": "Channels",

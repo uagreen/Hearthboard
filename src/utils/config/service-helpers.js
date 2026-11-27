@@ -332,6 +332,8 @@ export function cleanServiceGroups(groups) {
 
           // diskstation
           volume,
+          showVolumes,
+          showDisks,
 
           // dispatcharr
           enableActiveStreams,
@@ -652,6 +654,12 @@ export function cleanServiceGroups(groups) {
         }
         if (["diskstation", "qnap"].includes(type)) {
           if (volume) widget.volume = volume;
+        }
+        if (type === "diskstation") {
+          // username and password stay on the server
+          if (showVolumes !== undefined) widget.showVolumes = !!JSON.parse(showVolumes);
+          if (showDisks !== undefined) widget.showDisks = !!JSON.parse(showDisks);
+          if (expandSections !== undefined) widget.expandSections = !!JSON.parse(expandSections);
         }
         if (["dispatcharr"].includes(type)) {
           if (enableActiveStreams) widget.enableActiveStreams = !!JSON.parse(enableActiveStreams);

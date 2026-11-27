@@ -664,6 +664,48 @@ describe("utils/config/service-helpers", () => {
     }
   });
 
+  it("cleanServiceGroups passes diskstation options to the client without the credentials", async () => {
+    const { cleanServiceGroups } = await import("./service-helpers");
+
+    const rawGroups = [
+      {
+        name: "NAS",
+        services: [
+          {
+            name: "svc",
+            weight: 100,
+            widgets: [
+              {
+                type: "diskstation",
+                volume: "volume_2",
+                showVolumes: "true",
+                showDisks: true,
+                expandSections: true,
+                username: "u",
+                password: "secret",
+              },
+              { type: "diskstation" },
+            ],
+          },
+        ],
+        groups: [],
+      },
+    ];
+
+    const [configured, plain] = cleanServiceGroups(rawGroups)[0].services[0].widgets;
+    expect(configured).toMatchObject({
+      volume: "volume_2",
+      showVolumes: true,
+      showDisks: true,
+      expandSections: true,
+    });
+    expect(configured).not.toHaveProperty("username");
+    expect(configured).not.toHaveProperty("password");
+    for (const key of ["showVolumes", "showDisks", "expandSections"]) {
+      expect(plain).not.toHaveProperty(key);
+    }
+  });
+
   it("cleanServiceGroups removes calendar integration urls from frontend widget payload", async () => {
     const mod = await import("./service-helpers");
     const { cleanServiceGroups } = mod;
