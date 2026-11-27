@@ -52,11 +52,11 @@
   - `updateState(upgrade) -> {state: "uptodate"|"available"|"unknown", version?}` from `data.update ?? data`.
   - `connectionCount(connections) -> number|null`: `data.total` if a number, else `data.items.length`, else `null`.
 
-- [ ] **Step 1: Write failing tests** for each helper (fixtures from the spec's facts; missing/empty inputs return the documented neutral values) and for the three mappings in `widget.test.js`.
-- [ ] **Step 2: Run** `pnpm vitest run src/widgets/diskstation/diskstation-utils.test.js src/widgets/diskstation/widget.test.js`. Expected: FAIL.
-- [ ] **Step 3: Implement** the mappings and helpers.
-- [ ] **Step 4: Run** again. Expected: PASS.
-- [ ] **Step 5: Commit** `feat(diskstation): mappings and helpers for storage, upgrade and connections`.
+- [x] **Step 1: Write failing tests** for each helper (fixtures from the spec's facts; missing/empty inputs return the documented neutral values) and for the three mappings in `widget.test.js`.
+- [x] **Step 2: Run** `pnpm vitest run src/widgets/diskstation/diskstation-utils.test.js src/widgets/diskstation/widget.test.js`. Expected: FAIL.
+- [x] **Step 3: Implement** the mappings and helpers.
+- [x] **Step 4: Run** again. Expected: PASS.
+- [x] **Step 5: Commit** `feat(diskstation): mappings and helpers for storage, upgrade and connections`.
 
 ### Task 2: Component, options, strings
 
@@ -69,11 +69,11 @@
 - Consumes: Task 1 helpers; `ProgressRow` from `components/services/widget/progress-row`.
 - Produces: blocks `diskstation.temperature|firmware|update|diskHealth|networkDown|networkUp|users`; accordions for `showVolumes`/`showDisks`; options `showVolumes`, `showDisks` (booleans) passed through `cleanServiceGroups` for `diskstation` (`expandSections` already destructured; add `showVolumes`, `showDisks` names; keep the `volume` block). Locale keys under `diskstation`: `temperature` "Temperature", `firmware` "DSM", `update` "Update", `diskHealth` "Disks", `networkDown` "Download", `networkUp` "Upload", `users` "Users", `volumes` "Volumes", `disks` "Disks", `health_ok` "OK", `health_issues` "{{count}} issues", `up_to_date` "Up to date", `update_available` "Update: {{version}}", `update_unknown` "Unknown", `no_volumes` "No volumes", `no_disks` "No disks".
 
-- [ ] **Step 1: Convert the existing tests** to mock `useWidgetAPI` by endpoint (`mockImplementation((widget, endpoint) => responses[endpoint])`, unknown endpoints return `{data: undefined, error: undefined}`); they must still assert the same values. Then add failing tests: new blocks render values from fixtures; each optional endpoint is requested only when needed (assert `useWidgetAPI` was not called with `storage_info`/`upgrade`/`connections` by default and was with the field set); `—` when data is missing or the endpoint errors; one failing optional endpoint does not hide the other blocks; the volumes accordion renders a progressbar per volume with status; the disks accordion renders model and temperature; empty-state hints; default render still 4 blocks; service-helpers passes `showVolumes`, `showDisks`, `expandSections` without credentials.
-- [ ] **Step 2: Run** component test with `--pool vmThreads`, service-helpers test with default pool. Expected: new tests FAIL, converted existing tests PASS.
-- [ ] **Step 3: Implement:** `withWidgetFields(service, DEFAULT_FIELDS, 11)`; hooks for the new endpoints called unconditionally with `""` when not needed; optional-endpoint errors are not propagated to the top-level `Container error`; accordions styled like `src/widgets/transmission/component.jsx`; add locale keys and the service-helpers lines.
-- [ ] **Step 4: Run** the same commands plus `pnpm vitest run src/utils/editor`. Expected: PASS.
-- [ ] **Step 5: Commit** `feat(diskstation): health, volumes, update, network and user fields`.
+- [x] **Step 1: Convert the existing tests** to mock `useWidgetAPI` by endpoint (`mockImplementation((widget, endpoint) => responses[endpoint])`, unknown endpoints return `{data: undefined, error: undefined}`); they must still assert the same values. Then add failing tests: new blocks render values from fixtures; each optional endpoint is requested only when needed (assert `useWidgetAPI` was not called with `storage_info`/`upgrade`/`connections` by default and was with the field set); `—` when data is missing or the endpoint errors; one failing optional endpoint does not hide the other blocks; the volumes accordion renders a progressbar per volume with status; the disks accordion renders model and temperature; empty-state hints; default render still 4 blocks; service-helpers passes `showVolumes`, `showDisks`, `expandSections` without credentials.
+- [x] **Step 2: Run** component test with `--pool vmThreads`, service-helpers test with default pool. Expected: new tests FAIL, converted existing tests PASS.
+- [x] **Step 3: Implement:** `withWidgetFields(service, DEFAULT_FIELDS, 11)`; hooks for the new endpoints called unconditionally with `""` when not needed; optional-endpoint errors are not propagated to the top-level `Container error`; accordions styled like `src/widgets/transmission/component.jsx`; add locale keys and the service-helpers lines.
+- [x] **Step 4: Run** the same commands plus `pnpm vitest run src/utils/editor`. Expected: PASS.
+- [x] **Step 5: Commit** `feat(diskstation): health, volumes, update, network and user fields`.
 
 ### Task 3: Docs and checks
 
@@ -81,6 +81,6 @@
 
 - Modify: `docs/widgets/services/diskstation.md`
 
-- [ ] **Step 1: Docs:** allowed fields (eleven), options with defaults, an example config, what each field shows, the admin-account requirement, and the unverified items listed in Global Constraints.
-- [ ] **Step 2: Run** eslint (background, no limit) on changed files and prettier 3.3.3 `--check`. Expected: exit 0, no diffs.
-- [ ] **Step 3: Tick** this plan, format it with prettier 3.3.3, commit `docs(diskstation): new fields and accordions`.
+- [x] **Step 1: Docs:** allowed fields (eleven), options with defaults, an example config, what each field shows, the admin-account requirement, and the unverified items listed in Global Constraints.
+- [x] **Step 2: Run** eslint (background, no limit) on changed files and prettier 3.3.3 `--check`. Expected: exit 0, no diffs.
+- [x] **Step 3: Tick** this plan, format it with prettier 3.3.3, commit `docs(diskstation): new fields and accordions`.
